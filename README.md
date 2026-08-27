@@ -47,6 +47,8 @@ erDiagram
     CLIENTE ||--o{ MEMBRESIA : "tiene historial"
     CLIENTE ||--o{ PAGO : "realiza"
     CLIENTE ||--o{ ASISTENCIA : "registra entrada"
+    CLIENTE ||--o{ SEGUIMIENTO_FISICO : "evaluaciones"
+    ENTRENADOR ||--o{ SEGUIMIENTO_FISICO : "realiza"
 
     CLIENTE {
         bigint id PK "Auto Increment"
@@ -56,6 +58,17 @@ erDiagram
         int edad "Opcional"
         varchar(20) telefono "Opcional"
         date fecha_inscripcion "Auto asignada"
+    }
+
+    ENTRENADOR {
+        bigint id PK "Auto Increment"
+        varchar(15) dni UK "Único, obligatorio"
+        varchar(100) nombres "Obligatorio"
+        varchar(100) apellidos "Obligatorio"
+        varchar(100) especialidad "Musculación, Crossfit, etc."
+        varchar(20) telefono "Contacto"
+        varchar(100) correo "Email"
+        varchar(20) estado "ACTIVO / INACTIVO"
     }
 
     MEMBRESIA {
@@ -81,6 +94,19 @@ erDiagram
         bigint cliente_id FK "Relación con cliente"
         datetime fecha_hora "Timestamp de entrada"
     }
+
+    SEGUIMIENTO_FISICO {
+        bigint id PK "Auto Increment"
+        bigint cliente_id FK "Relación con cliente"
+        bigint entrenador_id FK "Entrenador a cargo"
+        date fecha_registro "Fecha de evaluación"
+        double peso_kg "Peso corporal"
+        double altura_cm "Estatura"
+        double porcentaje_grasa "% Grasa"
+        double masa_muscular "Masa muscular kg"
+        varchar(100) objetivo "Hipertrofia, Definición, etc."
+        varchar(255) observaciones "Recomendaciones"
+    }
 ```
 
 ### Scripts SQL Disponibles
@@ -100,6 +126,8 @@ El proyecto incluye scripts DDL y datos de prueba listos para importar:
   * Membresías vencidas.
   * Total de ingresos recaudados en el mes en curso (S/).
   * Asistencias registradas en el día.
+  * Total de entrenadores activos en staff.
+  * Fichas antropométricas y evaluaciones de progreso registradas.
 
 ### 2. 👥 Módulo de Clientes (`/clientes`)
 * Registro, edición y eliminación de clientes.
@@ -122,6 +150,15 @@ El proyecto incluye scripts DDL y datos de prueba listos para importar:
 ### 5. ⏱️ Módulo de Asistencias (`/asistencias`)
 * Registro de entrada por cliente con estampación de fecha y hora exacta (`LocalDateTime`).
 * Listado diario cronológico y conteo para el dashboard.
+
+### 6. 🏋️‍♂️ Módulo de Entrenadores (`/entrenadores`)
+* Registro del staff de entrenadores y personal trainers de **BRUTAL FITNESS**.
+* Control de especialidades (*Musculación, Crossfit, Funcional, Calistenia, Nutrición*), contacto y estado (`ACTIVO` / `INACTIVO`).
+
+### 7. 📈 Módulo de Progreso Físico (`/seguimientos`)
+* Fichas de evaluación antropométrica por cliente.
+* Registro de peso corporal, estatura, cálculo automático de **IMC**, porcentaje de grasa y masa muscular.
+* Seguimiento de objetivos deportivos y observaciones del entrenador.
 
 ---
 

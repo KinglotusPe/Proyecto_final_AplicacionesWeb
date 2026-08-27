@@ -17,8 +17,11 @@
                 </p>
             </div>
             <div class="d-flex gap-2 flex-wrap">
+                <a th:href="@{/seguimientos/nuevo}" class="btn btn-outline-danger fw-semibold">
+                    <i class="bi bi-activity me-1"></i> + Nueva Evaluación
+                </a>
                 <a th:href="@{/asistencias}" class="btn btn-outline-dark fw-semibold">
-                    <i class="bi bi-clock-history me-1"></i> Control de Asistencias
+                    <i class="bi bi-clock-history me-1"></i> Asistencias
                 </a>
                 <a th:href="@{/clientes/nuevo}" class="btn btn-danger fw-semibold">
                     <i class="bi bi-person-plus-fill me-1"></i> + Nuevo Cliente
@@ -30,7 +33,7 @@
     <!-- Indicadores / Metricas -->
     <div class="row g-3">
         <!-- Clientes Activos -->
-        <div class="col-md-4 col-sm-6">
+        <div class="col-md-3 col-sm-6">
             <div class="card shadow-sm border-0 h-100 p-3" style="border-radius: 12px; border-top: 4px solid #0d6efd !important;">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
@@ -45,7 +48,7 @@
         </div>
 
         <!-- Membresias Activas -->
-        <div class="col-md-4 col-sm-6">
+        <div class="col-md-3 col-sm-6">
             <div class="card shadow-sm border-0 h-100 p-3" style="border-radius: 12px; border-top: 4px solid #198754 !important;">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
@@ -60,7 +63,7 @@
         </div>
 
         <!-- Por Vencer -->
-        <div class="col-md-4 col-sm-6">
+        <div class="col-md-3 col-sm-6">
             <div class="card shadow-sm border-0 h-100 p-3" style="border-radius: 12px; border-top: 4px solid #ffc107 !important;">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
@@ -75,7 +78,7 @@
         </div>
 
         <!-- Membresias Vencidas -->
-        <div class="col-md-4 col-sm-6">
+        <div class="col-md-3 col-sm-6">
             <div class="card shadow-sm border-0 h-100 p-3" style="border-radius: 12px; border-top: 4px solid #dc3545 !important;">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
@@ -90,12 +93,12 @@
         </div>
 
         <!-- Recaudacion del Mes -->
-        <div class="col-md-4 col-sm-6">
+        <div class="col-md-3 col-sm-6">
             <div class="card shadow-sm border-0 h-100 p-3" style="border-radius: 12px; border-top: 4px solid #0dcaf0 !important;">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <div class="text-muted small fw-bold text-uppercase">Recaudación del Mes</div>
-                        <h2 class="display-6 fw-bold text-primary mt-2 mb-0">S/ <span th:text="${pagosDelMes}">0.00</span></h2>
+                        <h2 class="fs-2 fw-bold text-primary mt-2 mb-0">S/ <span th:text="${pagosDelMes}">0.00</span></h2>
                     </div>
                     <div class="bg-info-subtle text-info p-3 rounded-circle fs-3">
                         <i class="bi bi-cash-stack"></i>
@@ -105,15 +108,45 @@
         </div>
 
         <!-- Asistencias de Hoy -->
-        <div class="col-md-4 col-sm-6">
+        <div class="col-md-3 col-sm-6">
             <div class="card shadow-sm border-0 h-100 p-3" style="border-radius: 12px; border-top: 4px solid #212529 !important;">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <div class="text-muted small fw-bold text-uppercase">Asistencias de Hoy</div>
+                        <div class="text-muted small fw-bold text-uppercase">Asistencias Hoy</div>
                         <h2 class="display-6 fw-bold text-dark mt-2 mb-0" th:text="${asistenciasHoy}">0</h2>
                     </div>
                     <div class="bg-dark-subtle text-dark p-3 rounded-circle fs-3">
                         <i class="bi bi-person-check-fill"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Entrenadores Activos -->
+        <div class="col-md-3 col-sm-6">
+            <div class="card shadow-sm border-0 h-100 p-3" style="border-radius: 12px; border-top: 4px solid #6f42c1 !important;">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-muted small fw-bold text-uppercase">Entrenadores Staff</div>
+                        <h2 class="display-6 fw-bold text-dark mt-2 mb-0" th:text="${totalEntrenadores}">0</h2>
+                    </div>
+                    <div class="bg-primary-subtle text-primary p-3 rounded-circle fs-3" style="color: #6f42c1 !important; background-color: #e2d9f3 !important;">
+                        <i class="bi bi-person-badge-fill"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Evaluaciones Fisicas -->
+        <div class="col-md-3 col-sm-6">
+            <div class="card shadow-sm border-0 h-100 p-3" style="border-radius: 12px; border-top: 4px solid #fd7e14 !important;">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-muted small fw-bold text-uppercase">Fichas de Progreso</div>
+                        <h2 class="display-6 fw-bold text-dark mt-2 mb-0" th:text="${totalSeguimientos}">0</h2>
+                    </div>
+                    <div class="bg-warning-subtle text-warning p-3 rounded-circle fs-3" style="color: #fd7e14 !important; background-color: #ffe5d0 !important;">
+                        <i class="bi bi-activity"></i>
                     </div>
                 </div>
             </div>
