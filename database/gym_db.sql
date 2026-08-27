@@ -9,6 +9,8 @@ CHARACTER SET utf8mb4
 COLLATE utf8mb4_unicode_ci;
 
 USE gym_db;
+SET NAMES utf8mb4;
+SET CHARACTER SET utf8mb4;
 
 -- 2. Eliminar tablas previas si existen (orden inverso)
 DROP TABLE IF EXISTS seguimiento_fisico;
