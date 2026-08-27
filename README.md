@@ -292,12 +292,12 @@ gym-sistema/
 Proyecto desarrollado para la carrera de **Ingeniería de Sistemas de Información** en la **Escuela de Educación Superior Tecnológica Privada La Pontificia** (Ayacucho, Perú — 2026).
 
 ### 🎓 Integrantes del Equipo:
-1. 👨‍💻 **César Daniel Luza Cordova**
-2. 👨‍💻 **Lopez Berrocal Juhm Jorge**
-3. 👨‍💻 **Meneses Leche Luis Angel**
-4. 👩‍💻 **Chuchon Gutierrez Lidia Marisol**
-5. 👨‍💻 **Amiquero Martínez Kocyin Renato**
-6. 👨‍💻 **Gamboa Llamocca John Carlos**
+1. 👨‍💻 **César Daniel Luza Cordova** — [@KinglotusPe](https://github.com/KinglotusPe) *(Líder de Proyecto / Repo Owner)*
+2. 👨‍💻 **Lopez Berrocal Juhm Jorge** — [@lopezberrocaljuhmjorge-lang](https://github.com/lopezberrocaljuhmjorge-lang)
+3. 👨‍💻 **Meneses Leche Luis Angel** — [@miku70568804](https://github.com/miku70568804)
+4. 👩‍💻 **Chuchon Gutierrez Lidia Marisol** — [@SOL-CHG](https://github.com/SOL-CHG)
+5. 👨‍💻 **Amiquero Martínez Kocyin Renato** — [@XMyDemonSX411](https://github.com/XMyDemonSX411)
+6. 👨‍💻 **Gamboa Llamocca John Carlos** — [@john09gamboa](https://github.com/john09gamboa)
 
 * **Gimnasio Beneficiario:** **BRUTAL FITNESS** (Jr. José Santos Chocano, Distrito de Jesús Nazareno, Ayacucho).
 * **Título del Proyecto:** *Sistema web de gestión para BRUTAL FITNESS: Gestión de clientes, membresías, pagos y asistencias*.
