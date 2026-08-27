@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.pontificia</groupId>
+        <artifactId>gym-sistema-parent</artifactId>
+        <version>1.0.0</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>gym-sistema-backend</artifactId>
+    <name>gym-sistema-backend</name>
+    <description>Backend y API para BRUTAL FITNESS (Spring Boot + JPA)</description>
+
+    <dependencies>
+        <!-- ========================================== -->
+        <!-- 1. CAPA FRONTEND & WEB (MVC + THYMELEAF)    -->
+        <!-- ========================================== -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+
+        <!-- ========================================== -->
+        <!-- 2. CAPA BACKEND & PERSISTENCIA (JPA / ORM)  -->
+        <!-- ========================================== -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+
+        <!-- ========================================== -->
+        <!-- 3. DRIVERS DE BASE DE DATOS (DUAL SUPPORT)  -->
+        <!-- ========================================== -->
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- ========================================== -->
+        <!-- 4. VALIDACIÓN DE DATOS (BEAN VALIDATION)    -->
+        <!-- ========================================== -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+
+        <!-- ========================================== -->
+        <!-- 5. PRUEBAS                                  -->
+        <!-- ========================================== -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <!-- Mapeo automatico de la carpeta frontend/ hacia los recursos del backend -->
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+            <resource>
+                <directory>../frontend/templates</directory>
+                <targetPath>templates</targetPath>
+            </resource>
+            <resource>
+                <directory>../frontend/css</directory>
+                <targetPath>static/css</targetPath>
+            </resource>
+            <resource>
+                <directory>../frontend/js</directory>
+                <targetPath>static/js</targetPath>
+            </resource>
+        </resources>
+
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+</project>

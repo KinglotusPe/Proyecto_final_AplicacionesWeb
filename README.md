@@ -148,7 +148,7 @@ El proyecto incluye scripts DDL y datos de prueba listos para importar:
 ### 2. Configuración de Base de Datos
 
 #### Opción A: Usando MySQL (Por Defecto)
-En `src/main/resources/application.properties`:
+En `backend/src/main/resources/application.properties`:
 ```properties
 spring.datasource.url=jdbc:mysql://localhost:3306/gym_db?createDatabaseIfNotExist=true&serverTimezone=America/Lima
 spring.datasource.username=root
@@ -157,7 +157,7 @@ spring.datasource.password=root
 *(Importar script opcional: `mysql -u root -p gym_db < database/gym_db.sql`)*
 
 #### Opción B: Usando PostgreSQL
-El proyecto cuenta con el perfil `postgres` listo en `src/main/resources/application-postgres.properties`:
+El proyecto cuenta con el perfil `postgres` listo en `backend/src/main/resources/application-postgres.properties`:
 ```properties
 spring.datasource.url=jdbc:postgresql://localhost:5432/gym_db
 spring.datasource.username=postgres
@@ -168,14 +168,18 @@ spring.datasource.password=postgres
 ### 3. Compilar y Ejecutar
 
 ```bash
-# Compilar el proyecto
+# Compilar el proyecto completo desde la raíz
 mvn clean compile
 
-# Ejecutar con MySQL (por defecto)
+# Ejecutar el servidor con MySQL (por defecto)
+mvn spring-boot:run -pl backend
+
+# O ingresar a la carpeta backend:
+cd backend
 mvn spring-boot:run
 
 # Ejecutar con PostgreSQL (usando el perfil postgres)
-mvn spring-boot:run -Dspring-boot.run.profiles=postgres
+mvn spring-boot:run -pl backend -Dspring-boot.run.profiles=postgres
 ```
 
 ### 4. Acceder al Sistema
