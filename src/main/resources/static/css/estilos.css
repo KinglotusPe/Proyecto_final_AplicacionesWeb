@@ -1,27 +1,82 @@
+/* ==========================================================
+   ESTILOS GENERALES - BRUTAL FITNESS
+   Diseño limpio, profesional y de alto contraste
+   ========================================================== */
+
 body {
-    background-color: #f4f6f8;
+    background-color: #f8fafc;
+    color: #1e293b;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
-.card-indicador {
-    border: none;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+/* Navbar */
+.navbar {
+    background-color: #111827 !important;
 }
 
-.card-indicador h2 {
-    font-weight: 700;
+.navbar .nav-link {
+    color: #f1f5f9 !important;
+    font-weight: 500;
+    font-size: 0.95rem;
+    border-radius: 6px;
+    transition: background-color 0.15s ease, color 0.15s ease;
 }
 
-.table-responsive {
-    background: white;
+.navbar .nav-link:hover {
+    background-color: #1f2937 !important;
+    color: #ffffff !important;
+}
+
+/* Tarjetas */
+.card {
+    background-color: #ffffff;
     border-radius: 10px;
-    padding: 1rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
+/* Tablas */
+.table-responsive {
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 1.25rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.table th {
+    color: #475569;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.table td {
+    color: #1e293b;
+    vertical-align: middle;
+}
+
+/* Badges */
 .badge-activa {
-    background-color: #198754;
+    background-color: #16a34a !important;
+    color: #ffffff !important;
+    font-weight: 600;
+    font-size: 0.8rem;
+    padding: 0.35em 0.7em;
+    border-radius: 6px;
 }
 
 .badge-vencida {
-    background-color: #dc3545;
+    background-color: #dc2626 !important;
+    color: #ffffff !important;
+    font-weight: 600;
+    font-size: 0.8rem;
+    padding: 0.35em 0.7em;
+    border-radius: 6px;
+}
+
+/* Footer */
+footer {
+    background-color: #111827 !important;
+    color: #94a3b8;
 }

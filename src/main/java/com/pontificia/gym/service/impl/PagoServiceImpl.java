@@ -3,19 +3,20 @@ package com.pontificia.gym.service.impl;
 import com.pontificia.gym.entity.Pago;
 import com.pontificia.gym.repository.PagoRepository;
 import com.pontificia.gym.service.PagoService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.YearMonth;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class PagoServiceImpl implements PagoService {
 
     private final PagoRepository pagoRepository;
+
+    public PagoServiceImpl(PagoRepository pagoRepository) {
+        this.pagoRepository = pagoRepository;
+    }
 
     @Override
     public List<Pago> listarTodos() {
@@ -45,9 +46,10 @@ public class PagoServiceImpl implements PagoService {
 
     @Override
     public BigDecimal totalRecaudadoDelMes() {
-        YearMonth mesActual = YearMonth.now();
-        LocalDate desde = mesActual.atDay(1);
-        LocalDate hasta = mesActual.atEndOfMonth();
-        return pagoRepository.totalRecaudadoEntre(desde, hasta);
+        LocalDate hoy = LocalDate.now();
+        LocalDate inicioMes = hoy.withDayOfMonth(1);
+        LocalDate finMes = hoy.withDayOfMonth(hoy.lengthOfMonth());
+        BigDecimal total = pagoRepository.totalRecaudadoEntre(inicioMes, finMes);
+        return total != null ? total : BigDecimal.ZERO;
     }
 }

@@ -4,5 +4,7 @@ public enum TipoMembresia {
     DIARIO,
     SEMANAL,
     MENSUAL,
+    TRIMESTRAL,
+    ANUAL,
     PERSONALIZADA
 }

@@ -2,10 +2,6 @@ package com.pontificia.gym.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.time.LocalDateTime;
 
@@ -15,10 +11,6 @@ import java.time.LocalDateTime;
  */
 @Entity
 @Table(name = "asistencia")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 public class Asistencia {
 
     @Id
@@ -33,10 +25,43 @@ public class Asistencia {
     @Column(name = "fecha_hora", nullable = false)
     private LocalDateTime fechaHora;
 
+    public Asistencia() {
+    }
+
+    public Asistencia(Long id, Cliente cliente, LocalDateTime fechaHora) {
+        this.id = id;
+        this.cliente = cliente;
+        this.fechaHora = fechaHora;
+    }
+
     @PrePersist
     public void prePersist() {
         if (fechaHora == null) {
             fechaHora = LocalDateTime.now();
         }
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Cliente getCliente() {
+        return cliente;
+    }
+
+    public void setCliente(Cliente cliente) {
+        this.cliente = cliente;
+    }
+
+    public LocalDateTime getFechaHora() {
+        return fechaHora;
+    }
+
+    public void setFechaHora(LocalDateTime fechaHora) {
+        this.fechaHora = fechaHora;
     }
 }

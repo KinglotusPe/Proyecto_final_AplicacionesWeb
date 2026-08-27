@@ -4,7 +4,6 @@ import com.pontificia.gym.service.AsistenciaService;
 import com.pontificia.gym.service.ClienteService;
 import com.pontificia.gym.service.MembresiaService;
 import com.pontificia.gym.service.PagoService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,13 +13,22 @@ import org.springframework.web.bind.annotation.GetMapping;
  * Muestra el dashboard con los indicadores principales (como en la propuesta del gimnasio).
  */
 @Controller
-@RequiredArgsConstructor
 public class HomeController {
 
     private final ClienteService clienteService;
     private final MembresiaService membresiaService;
     private final PagoService pagoService;
     private final AsistenciaService asistenciaService;
+
+    public HomeController(ClienteService clienteService,
+                          MembresiaService membresiaService,
+                          PagoService pagoService,
+                          AsistenciaService asistenciaService) {
+        this.clienteService = clienteService;
+        this.membresiaService = membresiaService;
+        this.pagoService = pagoService;
+        this.asistenciaService = asistenciaService;
+    }
 
     @GetMapping("/")
     public String inicio(Model model) {

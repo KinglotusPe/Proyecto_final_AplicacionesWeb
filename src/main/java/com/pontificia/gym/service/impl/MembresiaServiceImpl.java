@@ -2,19 +2,22 @@ package com.pontificia.gym.service.impl;
 
 import com.pontificia.gym.entity.EstadoMembresia;
 import com.pontificia.gym.entity.Membresia;
+import com.pontificia.gym.entity.TipoMembresia;
 import com.pontificia.gym.repository.MembresiaRepository;
 import com.pontificia.gym.service.MembresiaService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class MembresiaServiceImpl implements MembresiaService {
 
     private final MembresiaRepository membresiaRepository;
+
+    public MembresiaServiceImpl(MembresiaRepository membresiaRepository) {
+        this.membresiaRepository = membresiaRepository;
+    }
 
     @Override
     public List<Membresia> listarTodos() {
@@ -35,6 +38,16 @@ public class MembresiaServiceImpl implements MembresiaService {
 
     @Override
     public Membresia guardar(Membresia membresia) {
+        // Asegurar fecha de inicio
+        if (membresia.getFechaInicio() == null) {
+            membresia.setFechaInicio(LocalDate.now());
+        }
+
+        // Calculo automatico de vencimiento si no se especifico o si no es personalizada
+        if (membresia.getFechaVencimiento() == null || membresia.getTipo() != TipoMembresia.PERSONALIZADA) {
+            membresia.setFechaVencimiento(membresia.calcularVencimientoSegunTipo());
+        }
+
         // Regla de negocio: si la fecha de vencimiento ya paso, se guarda como VENCIDA
         if (membresia.getFechaVencimiento() != null
                 && membresia.getFechaVencimiento().isBefore(LocalDate.now())) {

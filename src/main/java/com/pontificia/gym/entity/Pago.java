@@ -3,10 +3,6 @@ package com.pontificia.gym.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -16,10 +12,6 @@ import java.time.LocalDate;
  */
 @Entity
 @Table(name = "pago")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 public class Pago {
 
     @Id
@@ -47,4 +39,64 @@ public class Pago {
 
     @Column(name = "proxima_fecha_pago")
     private LocalDate proximaFechaPago;
+
+    public Pago() {
+    }
+
+    public Pago(Long id, Cliente cliente, BigDecimal monto, LocalDate fecha, MetodoPago metodoPago, LocalDate proximaFechaPago) {
+        this.id = id;
+        this.cliente = cliente;
+        this.monto = monto;
+        this.fecha = fecha;
+        this.metodoPago = metodoPago;
+        this.proximaFechaPago = proximaFechaPago;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Cliente getCliente() {
+        return cliente;
+    }
+
+    public void setCliente(Cliente cliente) {
+        this.cliente = cliente;
+    }
+
+    public BigDecimal getMonto() {
+        return monto;
+    }
+
+    public void setMonto(BigDecimal monto) {
+        this.monto = monto;
+    }
+
+    public LocalDate getFecha() {
+        return fecha;
+    }
+
+    public void setFecha(LocalDate fecha) {
+        this.fecha = fecha;
+    }
+
+    public MetodoPago getMetodoPago() {
+        return metodoPago;
+    }
+
+    public void setMetodoPago(MetodoPago metodoPago) {
+        this.metodoPago = metodoPago;
+    }
+
+    public LocalDate getProximaFechaPago() {
+        return proximaFechaPago;
+    }
+
+    public void setProximaFechaPago(LocalDate proximaFechaPago) {
+        this.proximaFechaPago = proximaFechaPago;
+    }
 }

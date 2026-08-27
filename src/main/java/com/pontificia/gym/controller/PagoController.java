@@ -5,7 +5,6 @@ import com.pontificia.gym.entity.Pago;
 import com.pontificia.gym.service.ClienteService;
 import com.pontificia.gym.service.PagoService;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -14,11 +13,15 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/pagos")
-@RequiredArgsConstructor
 public class PagoController {
 
     private final PagoService pagoService;
     private final ClienteService clienteService;
+
+    public PagoController(PagoService pagoService, ClienteService clienteService) {
+        this.pagoService = pagoService;
+        this.clienteService = clienteService;
+    }
 
     @GetMapping
     public String listar(Model model) {
@@ -29,7 +32,10 @@ public class PagoController {
 
     @GetMapping("/nuevo")
     public String nuevoForm(Model model) {
-        model.addAttribute("pago", new Pago());
+        Pago pago = new Pago();
+        pago.setFecha(java.time.LocalDate.now());
+        pago.setProximaFechaPago(java.time.LocalDate.now().plusMonths(1));
+        model.addAttribute("pago", pago);
         model.addAttribute("clientes", clienteService.listarTodos());
         model.addAttribute("metodos", MetodoPago.values());
         return "pagos/form";

@@ -3,7 +3,6 @@ package com.pontificia.gym.controller;
 import com.pontificia.gym.entity.Cliente;
 import com.pontificia.gym.service.ClienteService;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -12,10 +11,13 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/clientes")
-@RequiredArgsConstructor
 public class ClienteController {
 
     private final ClienteService clienteService;
+
+    public ClienteController(ClienteService clienteService) {
+        this.clienteService = clienteService;
+    }
 
     @GetMapping
     public String listar(@RequestParam(value = "buscar", required = false) String buscar, Model model) {
@@ -26,7 +28,9 @@ public class ClienteController {
 
     @GetMapping("/nuevo")
     public String nuevoForm(Model model) {
-        model.addAttribute("cliente", new Cliente());
+        Cliente cliente = new Cliente();
+        cliente.setFechaInscripcion(java.time.LocalDate.now());
+        model.addAttribute("cliente", cliente);
         return "clientes/form";
     }
 

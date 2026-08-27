@@ -5,7 +5,6 @@ import com.pontificia.gym.entity.Cliente;
 import com.pontificia.gym.repository.AsistenciaRepository;
 import com.pontificia.gym.service.AsistenciaService;
 import com.pontificia.gym.service.ClienteService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -14,11 +13,15 @@ import java.util.List;
 import java.util.Comparator;
 
 @Service
-@RequiredArgsConstructor
 public class AsistenciaServiceImpl implements AsistenciaService {
 
     private final AsistenciaRepository asistenciaRepository;
     private final ClienteService clienteService;
+
+    public AsistenciaServiceImpl(AsistenciaRepository asistenciaRepository, ClienteService clienteService) {
+        this.asistenciaRepository = asistenciaRepository;
+        this.clienteService = clienteService;
+    }
 
     @Override
     public List<Asistencia> listarTodos() {

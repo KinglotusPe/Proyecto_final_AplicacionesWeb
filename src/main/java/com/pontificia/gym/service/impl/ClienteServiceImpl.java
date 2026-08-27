@@ -3,7 +3,6 @@ package com.pontificia.gym.service.impl;
 import com.pontificia.gym.entity.Cliente;
 import com.pontificia.gym.repository.ClienteRepository;
 import com.pontificia.gym.service.ClienteService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,10 +12,13 @@ import java.util.List;
  * El Controller nunca llama directo al Repository, siempre pasa por el Service.
  */
 @Service
-@RequiredArgsConstructor
 public class ClienteServiceImpl implements ClienteService {
 
     private final ClienteRepository clienteRepository;
+
+    public ClienteServiceImpl(ClienteRepository clienteRepository) {
+        this.clienteRepository = clienteRepository;
+    }
 
     @Override
     public List<Cliente> listarTodos() {

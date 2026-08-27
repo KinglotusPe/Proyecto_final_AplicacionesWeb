@@ -3,10 +3,6 @@ package com.pontificia.gym.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.time.LocalDate;
 
@@ -16,10 +12,6 @@ import java.time.LocalDate;
  */
 @Entity
 @Table(name = "cliente")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 public class Cliente {
 
     @Id
@@ -46,6 +38,75 @@ public class Cliente {
 
     @Column(name = "fecha_inscripcion")
     private LocalDate fechaInscripcion;
+
+    public Cliente() {
+    }
+
+    public Cliente(Long id, String dni, String nombres, String apellidos, Integer edad, String telefono, LocalDate fechaInscripcion) {
+        this.id = id;
+        this.dni = dni;
+        this.nombres = nombres;
+        this.apellidos = apellidos;
+        this.edad = edad;
+        this.telefono = telefono;
+        this.fechaInscripcion = fechaInscripcion;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getDni() {
+        return dni;
+    }
+
+    public void setDni(String dni) {
+        this.dni = dni;
+    }
+
+    public String getNombres() {
+        return nombres;
+    }
+
+    public void setNombres(String nombres) {
+        this.nombres = nombres;
+    }
+
+    public String getApellidos() {
+        return apellidos;
+    }
+
+    public void setApellidos(String apellidos) {
+        this.apellidos = apellidos;
+    }
+
+    public Integer getEdad() {
+        return edad;
+    }
+
+    public void setEdad(Integer edad) {
+        this.edad = edad;
+    }
+
+    public String getTelefono() {
+        return telefono;
+    }
+
+    public void setTelefono(String telefono) {
+        this.telefono = telefono;
+    }
+
+    public LocalDate getFechaInscripcion() {
+        return fechaInscripcion;
+    }
+
+    public void setFechaInscripcion(LocalDate fechaInscripcion) {
+        this.fechaInscripcion = fechaInscripcion;
+    }
 
     public String getNombreCompleto() {
         return nombres + " " + apellidos;
