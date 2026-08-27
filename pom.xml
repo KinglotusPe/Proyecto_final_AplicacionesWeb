@@ -15,14 +15,16 @@
     <artifactId>gym-sistema</artifactId>
     <version>1.0.0</version>
     <name>gym-sistema</name>
-    <description>Sistema de gestion para gimnasio - Clientes, Membresias, Pagos y Asistencias</description>
+    <description>Sistema de gestion para BRUTAL FITNESS - Clientes, Membresias, Pagos y Asistencias</description>
 
     <properties>
         <java.version>17</java.version>
     </properties>
 
     <dependencies>
-        <!-- Web MVC (Controller + Thymeleaf) -->
+        <!-- ========================================== -->
+        <!-- 1. CAPA FRONTEND & WEB (MVC + THYMELEAF)    -->
+        <!-- ========================================== -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -32,32 +34,41 @@
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
         </dependency>
 
-        <!-- Spring Data JPA -->
+        <!-- ========================================== -->
+        <!-- 2. CAPA BACKEND & PERSISTENCIA (JPA / ORM)  -->
+        <!-- ========================================== -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
 
-        <!-- Driver MySQL -->
+        <!-- ========================================== -->
+        <!-- 3. DRIVERS DE BASE DE DATOS (DUAL SUPPORT)  -->
+        <!-- ========================================== -->
+        <!-- MySQL Driver -->
         <dependency>
             <groupId>com.mysql</groupId>
             <artifactId>mysql-connector-j</artifactId>
             <scope>runtime</scope>
         </dependency>
-
-        <!-- Driver PostgreSQL -->
+        <!-- PostgreSQL Driver -->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <scope>runtime</scope>
         </dependency>
 
-        <!-- Validaciones de formularios -->
+        <!-- ========================================== -->
+        <!-- 4. VALIDACIÓN DE DATOS (BEAN VALIDATION)    -->
+        <!-- ========================================== -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
 
+        <!-- ========================================== -->
+        <!-- 5. PRUEBAS UNITARIAS Y DE INTEGRACIÓN      -->
+        <!-- ========================================== -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>

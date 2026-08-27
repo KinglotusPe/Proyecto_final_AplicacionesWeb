@@ -183,24 +183,65 @@ Abre tu navegador en: **[http://localhost:8080](http://localhost:8080)**
 
 ---
 
-## 📁 Estructura del Código Fuente
+## 📁 Organización del Proyecto (Backend, Frontend y Base de Datos)
+
+El proyecto está organizado de manera modular y desacoplada respetando los estándares de la arquitectura por capas:
 
 ```
-src/main/java/com/pontificia/gym/
- ├── config/            -> Configuración global y manejadores de error
- ├── controller/        -> Controladores Spring MVC (Rutas y Vistas)
- │    ├── HomeController.java
- │    ├── ClienteController.java
- │    ├── MembresiaController.java
- │    ├── PagoController.java
- │    └── AsistenciaController.java
- ├── entity/            -> Modelos JPA (Cliente, Membresia, Pago, Asistencia, Enums)
- ├── repository/        -> Repositorios Spring Data JPA
- └── service/           -> Interfaces de negocio e implementaciones en impl/
-src/main/resources/
- ├── templates/         -> Vistas Thymeleaf (clientes, membresias, pagos, asistencias, fragments)
- ├── static/css/        -> Hojas de estilo personalizadas
- └── application.properties
+gym-sistema/
+│
+├── 🧠 BACKEND (Java 17 + Spring Boot 3)
+│   └── src/main/java/com/pontificia/gym/
+│       ├── controller/        -> Controladores Spring MVC (Recepción de peticiones HTTP y redirección)
+│       │   ├── HomeController.java
+│       │   ├── ClienteController.java
+│       │   ├── MembresiaController.java
+│       │   ├── PagoController.java
+│       │   └── AsistenciaController.java
+│       ├── service/           -> Capa de Lógica de Negocio (Interfaces)
+│       │   ├── ClienteService.java
+│       │   ├── MembresiaService.java
+│       │   ├── PagoService.java
+│       │   ├── AsistenciaService.java
+│       │   └── impl/          -> Implementaciones con reglas de validación y cálculo
+│       ├── repository/        -> Capa de Acceso a Datos (Spring Data JPA + Queries JPQL)
+│       │   ├── ClienteRepository.java
+│       │   ├── MembresiaRepository.java
+│       │   ├── PagoRepository.java
+│       │   └── AsistenciaRepository.java
+│       ├── entity/            -> Modelos de Datos / Entidades JPA
+│       │   ├── Cliente.java
+│       │   ├── Membresia.java
+│       │   ├── Pago.java
+│       │   ├── Asistencia.java
+│       │   ├── TipoMembresia.java (Enum)
+│       │   ├── EstadoMembresia.java (Enum)
+│       │   └── MetodoPago.java (Enum)
+│       └── config/            -> Manejo global de excepciones y configuraciones del servidor
+│
+├── 🎨 FRONTEND (HTML5 + Thymeleaf + CSS3 + Vanilla JS)
+│   └── src/main/resources/
+│       ├── templates/         -> Vistas dinámicas renderizadas por el servidor (SSR)
+│       │   ├── fragments/     -> Componentes reutilizables (Navbar, Footer, Head común)
+│       │   ├── clientes/      -> Vistas de gestión de clientes (listado y formulario)
+│       │   ├── membresias/    -> Vistas de membresías (listado y formulario)
+│       │   ├── pagos/         -> Vistas de pagos (listado y formulario de cobro)
+│       │   ├── asistencias/   -> Vistas de control de asistencias
+│       │   ├── index.html     -> Dashboard con métricas clave y accesos rápidos
+│       │   └── error.html     -> Página de error amigable
+│       └── static/            -> Recursos estáticos del cliente
+│           ├── css/           -> Hojas de estilo personalizadas (estilos.css)
+│           └── js/            -> Scripts dinámicos del navegador (membresia.js)
+│
+├── 🗄️ BASE DE DATOS (Scripts SQL)
+│   └── database/
+│       ├── gym_db.sql               -> Script DDL y datos de prueba para MySQL 8.x
+│       └── gym_db_postgresql.sql    -> Script DDL y datos de prueba para PostgreSQL 14+
+│
+└── ⚙️ CONFIGURACIÓN Y DEPENDENCIAS
+    ├── pom.xml                                      -> Gestión de dependencias Maven organizada por capas
+    ├── src/main/resources/application.properties    -> Configuración activa (MySQL)
+    └── src/main/resources/application-postgres.properties -> Configuración alternativa (PostgreSQL)
 ```
 
 ---
