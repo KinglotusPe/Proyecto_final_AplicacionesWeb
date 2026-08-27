@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(titulo='Cliente')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="container">
+    <h2 th:text="${cliente.id} != null ? 'Editar Cliente' : 'Nuevo Cliente'">Cliente</h2>
+
+    <form th:action="@{/clientes/guardar}" th:object="${cliente}" method="post" class="row g-3">
+        <input type="hidden" th:field="*{id}">
+
+        <div class="col-md-4">
+            <label class="form-label">DNI</label>
+            <input type="text" th:field="*{dni}" class="form-control">
+            <div class="text-danger" th:if="${#fields.hasErrors('dni')}" th:errors="*{dni}"></div>
+        </div>
+
+        <div class="col-md-4">
+            <label class="form-label">Nombres</label>
+            <input type="text" th:field="*{nombres}" class="form-control">
+            <div class="text-danger" th:if="${#fields.hasErrors('nombres')}" th:errors="*{nombres}"></div>
+        </div>
+
+        <div class="col-md-4">
+            <label class="form-label">Apellidos</label>
+            <input type="text" th:field="*{apellidos}" class="form-control">
+            <div class="text-danger" th:if="${#fields.hasErrors('apellidos')}" th:errors="*{apellidos}"></div>
+        </div>
+
+        <div class="col-md-4">
+            <label class="form-label">Edad</label>
+            <input type="number" th:field="*{edad}" class="form-control">
+        </div>
+
+        <div class="col-md-4">
+            <label class="form-label">Teléfono</label>
+            <input type="text" th:field="*{telefono}" class="form-control">
+        </div>
+
+        <div class="col-md-4">
+            <label class="form-label">Fecha de inscripción</label>
+            <input type="date" th:field="*{fechaInscripcion}" class="form-control">
+        </div>
+
+        <div class="col-12">
+            <button type="submit" class="btn btn-primary">Guardar</button>
+            <a th:href="@{/clientes}" class="btn btn-secondary">Cancelar</a>
+        </div>
+    </form>
+</div>
+</body>
+</html>

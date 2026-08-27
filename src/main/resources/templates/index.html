@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(titulo='Inicio')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="container">
+    <h2 class="mb-4">Panel de Control</h2>
+
+    <div class="row g-3">
+        <div class="col-md-4 col-sm-6">
+            <div class="card card-indicador p-3 text-center">
+                <div class="text-muted">Clientes activos</div>
+                <h2 th:text="${totalClientes}">0</h2>
+            </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+            <div class="card card-indicador p-3 text-center">
+                <div class="text-muted">Membresías activas</div>
+                <h2 class="text-success" th:text="${membresiasActivas}">0</h2>
+            </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+            <div class="card card-indicador p-3 text-center">
+                <div class="text-muted">Membresías por vencer (7 días)</div>
+                <h2 class="text-warning" th:text="${membresiasPorVencer}">0</h2>
+            </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+            <div class="card card-indicador p-3 text-center">
+                <div class="text-muted">Membresías vencidas</div>
+                <h2 class="text-danger" th:text="${membresiasVencidas}">0</h2>
+            </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+            <div class="card card-indicador p-3 text-center">
+                <div class="text-muted">Pagos del mes (S/)</div>
+                <h2 th:text="${pagosDelMes}">0.00</h2>
+            </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+            <div class="card card-indicador p-3 text-center">
+                <div class="text-muted">Asistencias de hoy</div>
+                <h2 th:text="${asistenciasHoy}">0</h2>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

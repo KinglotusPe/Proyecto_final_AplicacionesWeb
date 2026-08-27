@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(titulo='Clientes')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Clientes</h2>
+        <a th:href="@{/clientes/nuevo}" class="btn btn-primary">+ Nuevo Cliente</a>
+    </div>
+
+    <div th:if="${mensaje}" class="alert alert-success" th:text="${mensaje}"></div>
+
+    <form th:action="@{/clientes}" method="get" class="mb-3">
+        <input type="text" name="buscar" th:value="${buscar}" class="form-control"
+               placeholder="Buscar por nombre o apellido...">
+    </form>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead>
+            <tr>
+                <th>DNI</th>
+                <th>Nombres</th>
+                <th>Apellidos</th>
+                <th>Edad</th>
+                <th>Teléfono</th>
+                <th>Fecha inscripción</th>
+                <th>Acciones</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="cliente : ${clientes}">
+                <td th:text="${cliente.dni}"></td>
+                <td th:text="${cliente.nombres}"></td>
+                <td th:text="${cliente.apellidos}"></td>
+                <td th:text="${cliente.edad}"></td>
+                <td th:text="${cliente.telefono}"></td>
+                <td th:text="${cliente.fechaInscripcion}"></td>
+                <td>
+                    <a th:href="@{/clientes/editar/{id}(id=${cliente.id})}" class="btn btn-sm btn-outline-secondary">Editar</a>
+                    <a th:href="@{/clientes/eliminar/{id}(id=${cliente.id})}" class="btn btn-sm btn-outline-danger"
+                       onclick="return confirm('¿Eliminar este cliente?');">Eliminar</a>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(clientes)}">
+                <td colspan="7" class="text-center text-muted">No hay clientes registrados</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>

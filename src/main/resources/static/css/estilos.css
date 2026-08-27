@@ -1,0 +1,27 @@
+body {
+    background-color: #f4f6f8;
+}
+
+.card-indicador {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.card-indicador h2 {
+    font-weight: 700;
+}
+
+.table-responsive {
+    background: white;
+    border-radius: 10px;
+    padding: 1rem;
+}
+
+.badge-activa {
+    background-color: #198754;
+}
+
+.badge-vencida {
+    background-color: #dc3545;
+}

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(titulo='Asistencias')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="container">
+    <h2 class="mb-3">Control de Asistencias</h2>
+
+    <div th:if="${mensaje}" class="alert alert-success" th:text="${mensaje}"></div>
+
+    <form th:action="@{/asistencias/registrar}" method="post" class="row g-2 mb-4">
+        <div class="col-md-6">
+            <select name="clienteId" class="form-select" required>
+                <option value="">-- Seleccione un cliente --</option>
+                <option th:each="c : ${clientes}" th:value="${c.id}" th:text="${c.nombreCompleto}"></option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <button type="submit" class="btn btn-success">Registrar entrada</button>
+        </div>
+    </form>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead>
+            <tr>
+                <th>Cliente</th>
+                <th>Fecha y hora de entrada</th>
+                <th>Acciones</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="a : ${asistencias}">
+                <td th:text="${a.cliente.nombreCompleto}"></td>
+                <td th:text="${a.fechaHora}"></td>
+                <td>
+                    <a th:href="@{/asistencias/eliminar/{id}(id=${a.id})}" class="btn btn-sm btn-outline-danger"
+                       onclick="return confirm('¿Eliminar este registro?');">Eliminar</a>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(asistencias)}">
+                <td colspan="3" class="text-center text-muted">No hay asistencias registradas</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>

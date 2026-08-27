@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(titulo='Pagos')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Pagos</h2>
+        <a th:href="@{/pagos/nuevo}" class="btn btn-primary">+ Registrar Pago</a>
+    </div>
+
+    <div th:if="${mensaje}" class="alert alert-success" th:text="${mensaje}"></div>
+
+    <div class="alert alert-info">
+        Total recaudado este mes: <strong>S/ <span th:text="${totalMes}"></span></strong>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead>
+            <tr>
+                <th>Cliente</th>
+                <th>Monto (S/)</th>
+                <th>Fecha</th>
+                <th>Método de pago</th>
+                <th>Próximo pago</th>
+                <th>Acciones</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="p : ${pagos}">
+                <td th:text="${p.cliente.nombreCompleto}"></td>
+                <td th:text="${p.monto}"></td>
+                <td th:text="${p.fecha}"></td>
+                <td th:text="${p.metodoPago}"></td>
+                <td th:text="${p.proximaFechaPago}"></td>
+                <td>
+                    <a th:href="@{/pagos/eliminar/{id}(id=${p.id})}" class="btn btn-sm btn-outline-danger"
+                       onclick="return confirm('¿Eliminar este pago?');">Eliminar</a>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(pagos)}">
+                <td colspan="6" class="text-center text-muted">No hay pagos registrados</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>
