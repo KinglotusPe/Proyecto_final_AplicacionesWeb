@@ -36,92 +36,220 @@ El proyecto sigue una arquitectura en capas desacoplada y estandarizada:
 
 ---
 
-## 🗄️ Base de Datos y Modelo Entidad-Relación
+## 🗄️ Base de Datos y Modelo Entidad-Relación (20 Tablas Normalizadas)
 
-El sistema utiliza **MySQL 8.x** con el esquema `gym_db`. La base de datos está normalizada y centrada en la entidad `cliente` con relaciones 1:N (uno a varios) hacia membresías, pagos y asistencias.
+El sistema utiliza **MySQL 8.x** / **PostgreSQL 14+** con el esquema `gym_db`. La base de datos está completamente normalizada en **Tercera Forma Normal (3FN)** con soporte para relaciones **1:N**, **N:M**, maestros-detalle y catálogos paramétricos:
 
-### Diagrama Entidad-Relación (ERD)
+### Diagrama Entidad-Relación (ERD Completo)
 
 ```mermaid
 erDiagram
-    CLIENTE ||--o{ MEMBRESIA : "tiene historial"
+    CLIENTE ||--o{ MEMBRESIA : "contrata"
+    PLAN_MEMBRESIA ||--o{ MEMBRESIA : "clasifica"
     CLIENTE ||--o{ PAGO : "realiza"
     CLIENTE ||--o{ ASISTENCIA : "registra entrada"
-    CLIENTE ||--o{ SEGUIMIENTO_FISICO : "evaluaciones"
+    CLIENTE ||--o{ SEGUIMIENTO_FISICO : "recibe evaluaciones"
     ENTRENADOR ||--o{ SEGUIMIENTO_FISICO : "realiza"
+    CLIENTE ||--o{ RUTINA : "tiene asignada"
+    ENTRENADOR ||--o{ RUTINA : "diseña"
+    RUTINA ||--|{ RUTINA_DETALLE : "contiene"
+    EJERCICIO ||--o{ RUTINA_DETALLE : "se ejecuta en"
+    CATEGORIA_PRODUCTO ||--o{ PRODUCTO : "agrupa"
+    VENTA ||--|{ VENTA_DETALLE : "contiene"
+    PRODUCTO ||--o{ VENTA_DETALLE : "se vende en"
+    CLIENTE ||--o{ VENTA : "compra en tienda"
+    DISCIPLINA ||--o{ CLASE_GRUPAL : "define"
+    ENTRENADOR ||--o{ CLASE_GRUPAL : "dicta"
+    CLASE_GRUPAL ||--o{ RESERVA_CLASE : "recibe"
+    CLIENTE ||--o{ RESERVA_CLASE : "reserva cupo"
+    CASILLERO ||--o{ ALQUILER_CASILLERO : "se arrienda en"
+    CLIENTE ||--o{ ALQUILER_CASILLERO : "alquila"
+    CLIENTE ||--o| USUARIO : "cuenta de acceso"
+    ENTRENADOR ||--o| USUARIO : "cuenta de staff"
 
     CLIENTE {
         bigint id PK "Auto Increment"
-        varchar(15) dni UK "Único, obligatorio"
-        varchar(100) nombres "Obligatorio"
-        varchar(100) apellidos "Obligatorio"
-        int edad "Opcional"
-        varchar(20) telefono "Opcional"
-        date fecha_inscripcion "Auto asignada"
+        varchar(15) dni UK "DNI"
+        varchar(100) nombres "Nombres"
+        varchar(100) apellidos "Apellidos"
+        int edad "Edad"
+        varchar(20) telefono "Teléfono"
+        varchar(100) correo "Email"
+        date fecha_inscripcion "Fecha"
     }
 
-    ENTRENADOR {
+    PLAN_MEMBRESIA {
         bigint id PK "Auto Increment"
-        varchar(15) dni UK "Único, obligatorio"
-        varchar(100) nombres "Obligatorio"
-        varchar(100) apellidos "Obligatorio"
-        varchar(100) especialidad "Musculación, Crossfit, etc."
-        varchar(20) telefono "Contacto"
-        varchar(100) correo "Email"
-        varchar(20) estado "ACTIVO / INACTIVO"
+        varchar(100) nombre UK "Nombre del plan"
+        int duracion_dias "Duración"
+        decimal(10_2) precio_base "Precio base en S/"
+        boolean acceso_total "VIP o restringido"
     }
 
     MEMBRESIA {
         bigint id PK "Auto Increment"
-        bigint cliente_id FK "Relación con cliente"
+        bigint cliente_id FK
+        bigint plan_id FK
         enum tipo "DIARIO, SEMANAL, MENSUAL, TRIMESTRAL, ANUAL, PERSONALIZADA"
-        date fecha_inicio "Inicio de vigencia"
-        date fecha_vencimiento "Calculada automáticamente"
+        date fecha_inicio "Inicio"
+        date fecha_vencimiento "Vencimiento"
         enum estado "ACTIVA / VENCIDA"
     }
 
     PAGO {
         bigint id PK "Auto Increment"
-        bigint cliente_id FK "Relación con cliente"
+        bigint cliente_id FK
         decimal(10_2) monto "Monto en S/"
-        date fecha "Fecha del cobro"
+        date fecha "Fecha"
         enum metodo_pago "EFECTIVO, TARJETA, YAPE, PLIN, TRANSFERENCIA"
-        date proxima_fecha_pago "Siguiente fecha estimada"
+        date proxima_fecha_pago "Próximo cobro"
     }
 
     ASISTENCIA {
         bigint id PK "Auto Increment"
-        bigint cliente_id FK "Relación con cliente"
+        bigint cliente_id FK
         datetime fecha_hora "Timestamp de entrada"
     }
 
     SEGUIMIENTO_FISICO {
         bigint id PK "Auto Increment"
-        bigint cliente_id FK "Relación con cliente"
-        bigint entrenador_id FK "Entrenador a cargo"
-        date fecha_registro "Fecha de evaluación"
+        bigint cliente_id FK
+        bigint entrenador_id FK
+        date fecha_registro "Fecha"
         double peso_kg "Peso corporal"
         double altura_cm "Estatura"
         double porcentaje_grasa "% Grasa"
         double masa_muscular "Masa muscular kg"
-        varchar(100) objetivo "Hipertrofia, Definición, etc."
-        varchar(255) observaciones "Recomendaciones"
+        varchar(100) objetivo "Meta física"
+    }
+
+    ENTRENADOR {
+        bigint id PK "Auto Increment"
+        varchar(15) dni UK "DNI"
+        varchar(100) nombres "Nombres"
+        varchar(100) apellidos "Apellidos"
+        varchar(100) especialidad "Especialidad"
+        varchar(20) telefono "Teléfono"
+        varchar(100) correo "Email"
+        varchar(20) estado "ACTIVO / INACTIVO"
     }
 
     USUARIO {
         bigint id PK "Auto Increment"
-        varchar(50) username UK "DNI o usuario"
+        varchar(50) username UK "Usuario / DNI"
         varchar(255) password "BCrypt Hash"
         varchar(100) nombre "Nombre completo"
         varchar(30) rol "ROLE_ADMIN, ROLE_RECEPCIONISTA, ROLE_ENTRENADOR, ROLE_CLIENTE"
-        boolean activo "Estado de cuenta"
-        bigint cliente_id FK "Vínculo con cliente (opcional)"
-        bigint entrenador_id FK "Vínculo con entrenador (opcional)"
+        boolean activo "Estado"
+        bigint cliente_id FK
+        bigint entrenador_id FK
+    }
+
+    EJERCICIO {
+        bigint id PK "Auto Increment"
+        varchar(100) nombre UK "Nombre"
+        varchar(50) grupo_muscular "Pecho, Espalda, Piernas..."
+        varchar(30) nivel_dificultad "Nivel"
+    }
+
+    RUTINA {
+        bigint id PK "Auto Increment"
+        bigint cliente_id FK
+        bigint entrenador_id FK
+        varchar(100) nombre "Plan"
+        varchar(50) dia_semana "Día"
+        varchar(50) nivel "Nivel"
+    }
+
+    RUTINA_DETALLE {
+        bigint id PK "Auto Increment"
+        bigint rutina_id FK
+        bigint ejercicio_id FK
+        int series "Series"
+        int repeticiones "Repeticiones"
+        double peso_sugerido_kg "Carga sugerida"
+        int descanso_segundos "Descanso"
+    }
+
+    CATEGORIA_PRODUCTO {
+        bigint id PK "Auto Increment"
+        varchar(100) nombre UK "Suplementos, Bebidas..."
+    }
+
+    PRODUCTO {
+        bigint id PK "Auto Increment"
+        bigint categoria_id FK
+        varchar(50) codigo_barra UK "Código de barra"
+        varchar(120) nombre "Nombre"
+        decimal(10_2) precio_compra "Costo"
+        decimal(10_2) precio_venta "P. Venta"
+        int stock_actual "Stock"
+        int stock_minimo "Alerta stock"
+    }
+
+    VENTA {
+        bigint id PK "Auto Increment"
+        bigint cliente_id FK
+        bigint usuario_id FK
+        datetime fecha_hora "Fecha y hora"
+        decimal(10_2) total "Total en S/"
+        varchar(30) metodo_pago "Método"
+    }
+
+    VENTA_DETALLE {
+        bigint id PK "Auto Increment"
+        bigint venta_id FK
+        bigint producto_id FK
+        int cantidad "Cant."
+        decimal(10_2) precio_unitario "P. Unitario"
+        decimal(10_2) subtotal "Subtotal"
+    }
+
+    DISCIPLINA {
+        bigint id PK "Auto Increment"
+        varchar(100) nombre UK "Spinning, Crossfit, Boxeo..."
+        varchar(30) intensidad "Intensidad"
+    }
+
+    CLASE_GRUPAL {
+        bigint id PK "Auto Increment"
+        bigint disciplina_id FK
+        bigint entrenador_id FK
+        varchar(50) salon "Sala"
+        date fecha "Fecha"
+        time hora_inicio "Inicio"
+        time hora_fin "Fin"
+        int cupo_maximo "Aforo"
+    }
+
+    RESERVA_CLASE {
+        bigint id PK "Auto Increment"
+        bigint clase_id FK
+        bigint cliente_id FK
+        datetime fecha_reserva "Fecha"
+        varchar(30) estado "CONFIRMADA / ASISTIO"
+    }
+
+    CASILLERO {
+        bigint id PK "Auto Increment"
+        varchar(20) numero UK "N° Locker"
+        varchar(100) ubicacion "Vestidor"
+        varchar(30) estado "DISPONIBLE / OCUPADO"
+    }
+
+    ALQUILER_CASILLERO {
+        bigint id PK "Auto Increment"
+        bigint casillero_id FK
+        bigint cliente_id FK
+        date fecha_inicio "Inicio"
+        date fecha_fin "Fin"
+        decimal(10_2) costo "Costo mensual"
+        varchar(30) estado "ACTIVO"
     }
 ```
 
-### Scripts SQL Disponibles
-El proyecto incluye scripts DDL y datos de prueba listos para importar:
+### Scripts SQL Disponibles (20 Tablas + Datos de Prueba)
+El proyecto incluye scripts DDL normalizados y datos de prueba listos para importar:
 * 👉 **MySQL 8.x**: [`database/gym_db.sql`](database/gym_db.sql)
 * 👉 **PostgreSQL 14+**: [`database/gym_db_postgresql.sql`](database/gym_db_postgresql.sql)
 
