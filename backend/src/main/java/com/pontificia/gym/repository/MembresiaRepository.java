@@ -13,6 +13,8 @@ public interface MembresiaRepository extends JpaRepository<Membresia, Long> {
 
     List<Membresia> findByClienteId(Long clienteId);
 
+    List<Membresia> findByClienteIdOrderByFechaInicioDesc(Long clienteId);
+
     List<Membresia> findByEstado(EstadoMembresia estado);
 
     long countByEstado(EstadoMembresia estado);

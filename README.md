@@ -175,23 +175,32 @@ El sistema integra **Spring Security 6** con protección CSRF, sesiones seguras 
   * En modo `PERSONALIZADA`, permite ingresar libremente cualquier fecha manual.
 * **Control de Estados**: Actualización automática entre `ACTIVA` y `VENCIDA` según la fecha actual.
 
-### 5. 💵 Módulo de Pagos (`/pagos`)
+### 5. 💵 Módulo de Pagos y Boletas PDF (`/pagos`)
 * Registro de cobros asociados a un cliente y su método de pago (`EFECTIVO`, `TARJETA`, `YAPE`, `PLIN`, `TRANSFERENCIA`).
 * Pre-llenado inteligente de fecha de pago y proyección automática de la próxima fecha de pago.
+* **🧾 Emisión y Descarga de Boleta en PDF**: Generación en tiempo real de comprobantes oficiales con OpenPDF para cada cobro.
 * Cálculo consolidado de recaudación mensual mediante consultas agregadas (`SUM`).
 
-### 6. ⏱️ Módulo de Asistencias (`/asistencias`)
+### 6. ⏱️ Módulo de Asistencias y Check-in Rápido (`/asistencias`)
 * Registro de entrada por cliente con estampación de fecha y hora exacta (`LocalDateTime`).
-* Listado diario cronológico y conteo para el dashboard.
+* **⚡ Modo Molinete / Pantalla Completa (`/asistencias/control-acceso`)**: Validación instantánea por DNI o lector de código de barras con semáforo visual en vivo (🟢 *Acceso Concedido* / 🔴 *Acceso Denegado*).
 
-### 7. 🏋️‍♂️ Módulo de Entrenadores (`/entrenadores`)
+### 7. 🏋️‍♂️ Módulo de Entrenadores y Staff (`/entrenadores`)
 * Registro del staff de entrenadores y personal trainers de **BRUTAL FITNESS**.
 * Control de especialidades (*Musculación, Crossfit, Funcional, Calistenia, Nutrición*), contacto y estado (`ACTIVO` / `INACTIVO`).
 
-### 8. 📈 Módulo de Progreso Físico (`/seguimientos`)
+### 8. 📋 Módulo de Rutinas de Entrenamiento (`/rutinas`)
+* Asignación de rutinas semanales por día muscular (Pecho, Espalda, Piernas, etc.), nivel y detalle de ejercicios.
+* Visualización directa para los socios en su portal móvil.
+
+### 9. 📈 Módulo de Progreso Físico (`/seguimientos`)
 * Fichas de evaluación antropométrica por cliente.
 * Registro de peso corporal, estatura, cálculo automático de **IMC**, porcentaje de grasa y masa muscular.
-* Seguimiento de objetivos deportivos y observaciones del entrenador.
+* Gráfico interactivo con **Chart.js** en el portal del socio.
+
+### 10. 👥 Módulo de Gestión de Usuarios y Roles (`/usuarios`)
+* Panel exclusivo para el Administrador General.
+* Creación de usuarios, cambio de roles, activación/desactivación de cuentas y encriptación BCrypt.
 
 ---
 

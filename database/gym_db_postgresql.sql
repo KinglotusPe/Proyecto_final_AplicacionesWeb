@@ -4,6 +4,7 @@
    ========================================================== */
 
 -- 1. Eliminar tablas previas si existen (orden inverso)
+DROP TABLE IF EXISTS rutina CASCADE;
 DROP TABLE IF EXISTS usuario CASCADE;
 DROP TABLE IF EXISTS seguimiento_fisico CASCADE;
 DROP TABLE IF EXISTS asistencia CASCADE;
@@ -114,6 +115,26 @@ CREATE TABLE seguimiento_fisico (
 );
 
 /* ==========================================================
+   TABLA: RUTINA (PLANES DE ENTRENAMIENTO)
+   ========================================================== */
+CREATE TABLE rutina (
+    id BIGSERIAL PRIMARY KEY,
+    cliente_id BIGINT NOT NULL,
+    entrenador_id BIGINT NULL,
+    nombre VARCHAR(100) NOT NULL,
+    dia_semana VARCHAR(50) NOT NULL,
+    ejercicios TEXT NOT NULL,
+    nivel VARCHAR(50) NULL DEFAULT 'Intermedio',
+    observaciones VARCHAR(255) NULL,
+    CONSTRAINT fk_rutina_cliente 
+        FOREIGN KEY (cliente_id) REFERENCES cliente(id) 
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT fk_rutina_entrenador 
+        FOREIGN KEY (entrenador_id) REFERENCES entrenador(id) 
+        ON DELETE SET NULL ON UPDATE CASCADE
+);
+
+/* ==========================================================
    TABLA: USUARIO (AUTENTICACIÓN Y ROLES)
    ========================================================== */
 CREATE TABLE usuario (
@@ -162,6 +183,11 @@ INSERT INTO asistencia (cliente_id, fecha_hora) VALUES
 INSERT INTO seguimiento_fisico (cliente_id, entrenador_id, fecha_registro, peso_kg, altura_cm, porcentaje_grasa, masa_muscular, objetivo, observaciones) VALUES
 (1, 1, CURRENT_DATE, 76.5, 175.0, 18.0, 35.5, 'Hipertrofia / Ganancia Muscular', 'Progreso óptimo, buena respuesta a la carga de entrenamiento.'),
 (2, 2, CURRENT_DATE, 58.0, 162.0, 21.0, 24.0, 'Definición / Pérdida de Grasa', 'Excelente resistencia en circuito funcional.');
+
+INSERT INTO rutina (cliente_id, entrenador_id, nombre, dia_semana, ejercicios, nivel, observaciones) VALUES
+(1, 1, 'Fuerza e Hipertrofia A', 'Lunes - Pecho y Tríceps', '1. Press Banca: 4x10\n2. Press Inclinado con Mancuernas: 3x12\n3. Fondos en Paralelas: 3x al fallo\n4. Extensión Tríceps en Polea: 4x15', 'Intermedio', 'Descanso de 90 segundos entre series pesadas.'),
+(1, 1, 'Fuerza e Hipertrofia B', 'Miércoles - Espalda y Bíceps', '1. Jalón al Pecho: 4x12\n2. Remo con Barra: 4x10\n3. Curl de Bíceps con Barra Z: 3x12\n4. Martillo con Mancuernas: 3x15', 'Intermedio', 'Cuidar la retracción escapular.'),
+(2, 2, 'Acondicionamiento Físico', 'Martes - Piernas y Core', '1. Sentadillas con barra: 4x12\n2. Prensa inclinada: 3x15\n3. Zancadas con mancuernas: 3x12/pierna\n4. Plancha abdominal: 4x45 seg', 'Principiante', 'Priorizar técnica y respiración.');
 
 INSERT INTO usuario (username, password, nombre, rol, activo, cliente_id, entrenador_id) VALUES
 ('admin', '$2a$10$eAccYoNO32CpArGPl9OxP.4jGzT7mBvHcqIe7tJ9P7KkV6OqN4qC6', 'César Luza (Administrador General)', 'ROLE_ADMIN', TRUE, NULL, NULL),

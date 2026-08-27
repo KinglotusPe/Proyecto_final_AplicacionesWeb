@@ -31,10 +31,12 @@ public class SecurityConfig {
                 .requestMatchers("/css/**", "/js/**", "/images/**", "/favicon.ico").permitAll()
                 // Ruta de login
                 .requestMatchers("/login").permitAll()
+                // Gestión de Usuarios y Roles (Solo Admin General)
+                .requestMatchers("/usuarios/**").hasAuthority("ROLE_ADMIN")
                 // Portal del Socio / Cliente
                 .requestMatchers("/portal/**").hasAnyAuthority("ROLE_CLIENTE", "ROLE_ADMIN")
-                // Módulos de Entrenadores y Evaluaciones Físicas
-                .requestMatchers("/entrenadores/**", "/seguimientos/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_RECEPCIONISTA", "ROLE_ENTRENADOR")
+                // Módulos de Entrenadores, Evaluaciones Físicas y Rutinas
+                .requestMatchers("/entrenadores/**", "/seguimientos/**", "/rutinas/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_RECEPCIONISTA", "ROLE_ENTRENADOR")
                 // Módulos Administrativos y Operativos
                 .requestMatchers("/clientes/**", "/membresias/**", "/pagos/**", "/asistencias/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_RECEPCIONISTA")
                 // Panel Principal / Dashboard

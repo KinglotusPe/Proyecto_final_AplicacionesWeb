@@ -2,15 +2,16 @@ package com.pontificia.gym.service.impl;
 
 import com.pontificia.gym.entity.EstadoMembresia;
 import com.pontificia.gym.entity.Membresia;
-import com.pontificia.gym.entity.TipoMembresia;
 import com.pontificia.gym.repository.MembresiaRepository;
 import com.pontificia.gym.service.MembresiaService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @Service
+@Transactional
 public class MembresiaServiceImpl implements MembresiaService {
 
     private final MembresiaRepository membresiaRepository;
@@ -20,41 +21,44 @@ public class MembresiaServiceImpl implements MembresiaService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Membresia> listarTodos() {
-        actualizarEstados();
         return membresiaRepository.findAll();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Membresia buscarPorId(Long id) {
-        return membresiaRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Membresia no encontrada con id " + id));
+        return membresiaRepository.findById(id).orElse(null);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Membresia> listarPorCliente(Long clienteId) {
-        return membresiaRepository.findByClienteId(clienteId);
+        return membresiaRepository.findByClienteIdOrderByFechaInicioDesc(clienteId);
     }
 
     @Override
     public Membresia guardar(Membresia membresia) {
-        // Asegurar fecha de inicio
+        // Regla de negocio: si no se asigno fecha de inicio, usar hoy
         if (membresia.getFechaInicio() == null) {
             membresia.setFechaInicio(LocalDate.now());
         }
 
-        // Calculo automatico de vencimiento si no se especifico o si no es personalizada
-        if (membresia.getFechaVencimiento() == null || membresia.getTipo() != TipoMembresia.PERSONALIZADA) {
-            membresia.setFechaVencimiento(membresia.calcularVencimientoSegunTipo());
+        // Si no se asigno fecha de vencimiento manual, calcular segun el tipo
+        if (membresia.getFechaVencimiento() == null && membresia.getTipo() != null) {
+            membresia.setFechaVencimiento(membresia.getTipo().calcularVencimiento(membresia.getFechaInicio()));
         }
 
-        // Regla de negocio: si la fecha de vencimiento ya paso, se guarda como VENCIDA
-        if (membresia.getFechaVencimiento() != null
-                && membresia.getFechaVencimiento().isBefore(LocalDate.now())) {
-            membresia.setEstado(EstadoMembresia.VENCIDA);
-        } else {
-            membresia.setEstado(EstadoMembresia.ACTIVA);
+        // Actualizar estado segun la fecha de vencimiento
+        if (membresia.getFechaVencimiento() != null) {
+            if (membresia.getFechaVencimiento().isBefore(LocalDate.now())) {
+                membresia.setEstado(EstadoMembresia.VENCIDA);
+            } else {
+                membresia.setEstado(EstadoMembresia.ACTIVA);
+            }
         }
+
         return membresiaRepository.save(membresia);
     }
 
@@ -64,29 +68,37 @@ public class MembresiaServiceImpl implements MembresiaService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public long contarActivas() {
-        actualizarEstados();
         return membresiaRepository.countByEstado(EstadoMembresia.ACTIVA);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public long contarVencidas() {
-        actualizarEstados();
         return membresiaRepository.countByEstado(EstadoMembresia.VENCIDA);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Membresia> listarPorVencerEnDias(int dias) {
         LocalDate hoy = LocalDate.now();
-        return membresiaRepository.findMembresiasPorVencer(hoy, hoy.plusDays(dias));
+        LocalDate limite = hoy.plusDays(dias);
+        return membresiaRepository.findMembresiasPorVencer(hoy, limite);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Membresia> listarProximasAVencer() {
+        return listarPorVencerEnDias(7);
     }
 
     @Override
     public void actualizarEstados() {
-        LocalDate hoy = LocalDate.now();
         List<Membresia> activas = membresiaRepository.findByEstado(EstadoMembresia.ACTIVA);
+        LocalDate hoy = LocalDate.now();
         for (Membresia m : activas) {
-            if (m.getFechaVencimiento().isBefore(hoy)) {
+            if (m.getFechaVencimiento() != null && m.getFechaVencimiento().isBefore(hoy)) {
                 m.setEstado(EstadoMembresia.VENCIDA);
                 membresiaRepository.save(m);
             }

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(titulo='Módulo de Control de Acceso Rápido')}"></head>
+<body class="bg-light d-flex flex-column min-vh-100">
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="container mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <div>
+            <h1 class="h3 fw-bold text-dark mb-0">⚡ Control de Acceso Rápido (Recepción / Molinete)</h1>
+            <p class="text-secondary small mb-0">Escaneo de DNI o código de barras con validación inmediata de membresía</p>
+        </div>
+        <a th:href="@{/asistencias}" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-left me-1"></i> Volver a Asistencias
+        </a>
+    </div>
+
+    <!-- Caja de Escaneo Principal -->
+    <div class="card shadow-sm border-0 mb-4 p-4 text-center" style="border-radius: 16px; background-color: #111827; color: white;">
+        <h2 class="h4 fw-bold text-light mb-3">
+            <i class="bi bi-upc-scan text-danger me-2"></i> Ingrese o Escanee el DNI del Socio
+        </h2>
+        
+        <form th:action="@{/asistencias/control-acceso/verificar}" method="post" class="mx-auto" style="max-width: 500px;">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+            <div class="input-group input-group-lg shadow">
+                <span class="input-group-text bg-dark border-secondary text-danger">
+                    <i class="bi bi-person-vcard fs-3"></i>
+                </span>
+                <input type="text" name="dni" class="form-control text-center fw-bold fs-3 border-secondary" 
+                       placeholder="Ej: 72345678" autofocus required pattern="[0-9]{8,15}" autocomplete="off">
+                <button type="submit" class="btn btn-danger fw-bold px-4 text-uppercase">
+                    Validar <i class="bi bi-arrow-right-circle ms-1"></i>
+                </button>
+            </div>
+            <div class="text-secondary small mt-2">
+                <i class="bi bi-keyboard me-1"></i> Compatible con pistolas lectoras de código de barras USB y teclado.
+            </div>
+        </form>
+    </div>
+
+    <!-- Resultado Visual del Acceso -->
+    <div class="mb-4" th:if="${resultado != null}">
+        <!-- 1. ACCESO CONCEDIDO (VERDE) -->
+        <div th:if="${resultado == 'PERMITIDO'}" class="card border-0 shadow-lg text-white" style="border-radius: 16px; background: linear-gradient(135deg, #059669 0%, #10b981 100%);">
+            <div class="card-body p-4 text-center">
+                <div class="display-1 mb-2"><i class="bi bi-check-circle-fill"></i></div>
+                <h2 class="display-5 fw-bold text-uppercase mb-1">¡ACCESO CONCEDIDO!</h2>
+                <h3 class="h3 text-white fw-bold mb-3" th:text="${cliente.nombreCompleto}">Juan Carlos Perez</h3>
+                
+                <div class="d-inline-flex gap-3 bg-white text-dark p-3 rounded-4 shadow-sm flex-wrap justify-content-center">
+                    <div>
+                        <div class="small text-muted fw-bold">DNI:</div>
+                        <div class="fw-bold" th:text="${cliente.dni}">72345678</div>
+                    </div>
+                    <div class="border-start ps-3">
+                        <div class="small text-muted fw-bold">Plan:</div>
+                        <div class="fw-bold text-success" th:text="${membresia.tipo}">MENSUAL</div>
+                    </div>
+                    <div class="border-start ps-3">
+                        <div class="small text-muted fw-bold">Vence:</div>
+                        <div class="fw-bold" th:text="${#temporals.format(membresia.fechaVencimiento, 'dd/MM/yyyy')}">30/09/2026</div>
+                    </div>
+                    <div class="border-start ps-3">
+                        <div class="small text-muted fw-bold">Estado:</div>
+                        <div class="badge bg-success fs-6" th:text="${diasRestantes + ' días restantes'}">28 días restantes</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. ACCESO DENEGADO (ROJO) -->
+        <div th:if="${resultado == 'DENEGADO'}" class="card border-0 shadow-lg text-white" style="border-radius: 16px; background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);">
+            <div class="card-body p-4 text-center">
+                <div class="display-1 mb-2"><i class="bi bi-x-circle-fill"></i></div>
+                <h2 class="display-5 fw-bold text-uppercase mb-1">¡ACCESO DENEGADO!</h2>
+                <h3 class="h3 text-white fw-bold mb-3" th:text="${cliente.nombreCompleto}">Juan Carlos Perez</h3>
+                
+                <div class="alert alert-light text-danger fw-bold d-inline-block px-4 py-2 mb-3">
+                    <i class="bi bi-exclamation-octagon-fill me-1"></i> MEMBRESÍA VENCIDA O INACTIVA
+                </div>
+                
+                <div class="d-flex justify-content-center gap-2">
+                    <a th:href="@{/membresias/nuevo}" class="btn btn-dark fw-bold px-4 py-2 shadow">
+                        <i class="bi bi-arrow-repeat me-1"></i> Renovar Membresía Ahora
+                    </a>
+                    <a th:href="@{/pagos/nuevo}" class="btn btn-light fw-bold px-4 py-2 shadow text-danger">
+                        <i class="bi bi-cash-coin me-1"></i> Cobrar Cuota
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. NO REGISTRADO (AMARILLO) -->
+        <div th:if="${resultado == 'NO_REGISTRADO'}" class="card border-0 shadow-lg text-dark bg-warning" style="border-radius: 16px;">
+            <div class="card-body p-4 text-center">
+                <div class="display-2 mb-2"><i class="bi bi-person-x-fill"></i></div>
+                <h2 class="h3 fw-bold text-uppercase mb-1">CLIENTE NO ENCONTRADO</h2>
+                <p class="mb-3">El DNI <strong th:text="${dniBuscado}">72345678</strong> no se encuentra registrado en el sistema de <strong>BRUTAL FITNESS</strong>.</p>
+                <a th:href="@{/clientes/nuevo}" class="btn btn-dark fw-bold px-4 py-2 shadow">
+                    <i class="bi bi-person-plus-fill me-1"></i> Registrar Nuevo Cliente
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla de Asistencias del Día -->
+    <div class="card shadow-sm border-0" style="border-radius: 12px;">
+        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+            <h2 class="h5 fw-bold text-dark mb-0">
+                <i class="bi bi-clock-history text-danger me-1"></i> Asistencias Registradas Hoy
+            </h2>
+            <span class="badge bg-danger fs-6 px-3" th:text="${totalHoy + ' Ingresos Hoy'}">5 Ingresos Hoy</span>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                    <tr>
+                        <th>#</th>
+                        <th>Cliente / Socio</th>
+                        <th>DNI</th>
+                        <th>Hora de Ingreso</th>
+                        <th>Estado de Entrada</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="a, iter : ${asistenciasHoy}">
+                        <td class="text-muted fw-semibold" th:text="${iter.count}">1</td>
+                        <td>
+                            <strong class="text-dark" th:text="${a.cliente.nombreCompleto}">Juan Perez</strong>
+                        </td>
+                        <td th:text="${a.cliente.dni}">72345678</td>
+                        <td class="fw-bold text-primary" th:text="${#temporals.format(a.fechaHora, 'HH:mm:ss')}">10:30:15</td>
+                        <td>
+                            <span class="badge bg-success"><i class="bi bi-check2 me-1"></i> REGISTRADO</span>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(asistenciasHoy)}">
+                        <td colspan="5" class="text-center text-muted py-4">Aún no hay ingresos registrados el día de hoy.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

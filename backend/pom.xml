@@ -13,7 +13,7 @@
 
     <artifactId>gym-sistema-backend</artifactId>
     <name>gym-sistema-backend</name>
-    <description>Backend y API para BRUTAL FITNESS (Spring Boot + Security + JPA)</description>
+    <description>Backend y API para BRUTAL FITNESS (Spring Boot + Security + JPA + OpenPDF)</description>
 
     <dependencies>
         <!-- ========================================== -->
@@ -49,7 +49,16 @@
         </dependency>
 
         <!-- ========================================== -->
-        <!-- 4. DRIVERS DE BASE DE DATOS (DUAL SUPPORT)  -->
+        <!-- 4. GENERACIÓN DE REPORTES Y BOLETAS EN PDF  -->
+        <!-- ========================================== -->
+        <dependency>
+            <groupId>com.github.librepdf</groupId>
+            <artifactId>openpdf</artifactId>
+            <version>1.3.39</version>
+        </dependency>
+
+        <!-- ========================================== -->
+        <!-- 5. DRIVERS DE BASE DE DATOS (DUAL SUPPORT)  -->
         <!-- ========================================== -->
         <dependency>
             <groupId>com.mysql</groupId>
@@ -63,7 +72,7 @@
         </dependency>
 
         <!-- ========================================== -->
-        <!-- 5. VALIDACIÓN DE DATOS (BEAN VALIDATION)    -->
+        <!-- 6. VALIDACIÓN DE DATOS (BEAN VALIDATION)    -->
         <!-- ========================================== -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -71,7 +80,7 @@
         </dependency>
 
         <!-- ========================================== -->
-        <!-- 6. PRUEBAS                                  -->
+        <!-- 7. PRUEBAS                                  -->
         <!-- ========================================== -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

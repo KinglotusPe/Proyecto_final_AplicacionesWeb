@@ -23,19 +23,22 @@ public class PortalClienteController {
     private final PagoService pagoService;
     private final AsistenciaService asistenciaService;
     private final SeguimientoFisicoService seguimientoFisicoService;
+    private final RutinaService rutinaService;
 
     public PortalClienteController(UsuarioService usuarioService,
                                    ClienteService clienteService,
                                    MembresiaService membresiaService,
                                    PagoService pagoService,
                                    AsistenciaService asistenciaService,
-                                   SeguimientoFisicoService seguimientoFisicoService) {
+                                   SeguimientoFisicoService seguimientoFisicoService,
+                                   RutinaService rutinaService) {
         this.usuarioService = usuarioService;
         this.clienteService = clienteService;
         this.membresiaService = membresiaService;
         this.pagoService = pagoService;
         this.asistenciaService = asistenciaService;
         this.seguimientoFisicoService = seguimientoFisicoService;
+        this.rutinaService = rutinaService;
     }
 
     @GetMapping("/mi-cuenta")
@@ -87,6 +90,9 @@ public class PortalClienteController {
 
             // Seguimientos Físicos / Evaluaciones
             model.addAttribute("seguimientos", seguimientoFisicoService.listarPorCliente(cliente.getId()));
+
+            // Rutinas de Entrenamiento Personalizadas
+            model.addAttribute("rutinas", rutinaService.listarPorCliente(cliente.getId()));
         }
 
         return "portal/mi_cuenta";

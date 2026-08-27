@@ -3,51 +3,71 @@ package com.pontificia.gym.service.impl;
 import com.pontificia.gym.entity.Asistencia;
 import com.pontificia.gym.entity.Cliente;
 import com.pontificia.gym.repository.AsistenciaRepository;
+import com.pontificia.gym.repository.ClienteRepository;
 import com.pontificia.gym.service.AsistenciaService;
-import com.pontificia.gym.service.ClienteService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
-import java.util.Comparator;
 
 @Service
+@Transactional
 public class AsistenciaServiceImpl implements AsistenciaService {
 
     private final AsistenciaRepository asistenciaRepository;
-    private final ClienteService clienteService;
+    private final ClienteRepository clienteRepository;
 
-    public AsistenciaServiceImpl(AsistenciaRepository asistenciaRepository, ClienteService clienteService) {
+    public AsistenciaServiceImpl(AsistenciaRepository asistenciaRepository,
+                                  ClienteRepository clienteRepository) {
         this.asistenciaRepository = asistenciaRepository;
-        this.clienteService = clienteService;
+        this.clienteRepository = clienteRepository;
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Asistencia> listarTodos() {
-        List<Asistencia> lista = asistenciaRepository.findAll();
-        lista.sort(Comparator.comparing(Asistencia::getFechaHora).reversed());
-        return lista;
+        return asistenciaRepository.findAll();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Asistencia> listarDeHoy() {
         LocalDateTime inicio = LocalDate.now().atStartOfDay();
-        LocalDateTime fin = LocalDate.now().atTime(23, 59, 59);
+        LocalDateTime fin = LocalDate.now().atTime(LocalTime.MAX);
         return asistenciaRepository.findByFechaHoraBetweenOrderByFechaHoraDesc(inicio, fin);
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public List<Asistencia> listarHoy() {
+        return listarDeHoy();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List<Asistencia> listarPorCliente(Long clienteId) {
-        return asistenciaRepository.findByClienteId(clienteId);
+        return asistenciaRepository.findByClienteIdOrderByFechaHoraDesc(clienteId);
     }
 
     @Override
     public Asistencia registrarEntrada(Long clienteId) {
-        Cliente cliente = clienteService.buscarPorId(clienteId);
+        Cliente cliente = clienteRepository.findById(clienteId)
+                .orElseThrow(() -> new IllegalArgumentException("Cliente no encontrado: " + clienteId));
+
         Asistencia asistencia = new Asistencia();
         asistencia.setCliente(cliente);
         asistencia.setFechaHora(LocalDateTime.now());
+        return asistenciaRepository.save(asistencia);
+    }
+
+    @Override
+    public Asistencia guardar(Asistencia asistencia) {
+        if (asistencia.getFechaHora() == null) {
+            asistencia.setFechaHora(LocalDateTime.now());
+        }
         return asistenciaRepository.save(asistencia);
     }
 
@@ -57,9 +77,16 @@ public class AsistenciaServiceImpl implements AsistenciaService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public long contarAsistenciasDeHoy() {
         LocalDateTime inicio = LocalDate.now().atStartOfDay();
-        LocalDateTime fin = LocalDate.now().atTime(23, 59, 59);
+        LocalDateTime fin = LocalDate.now().atTime(LocalTime.MAX);
         return asistenciaRepository.countByFechaHoraBetween(inicio, fin);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public long contarAsistenciasHoy() {
+        return contarAsistenciasDeHoy();
     }
 }

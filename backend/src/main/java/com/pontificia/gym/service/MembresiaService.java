@@ -14,6 +14,7 @@ public interface MembresiaService {
     long contarActivas();
     long contarVencidas();
     List<Membresia> listarPorVencerEnDias(int dias);
+    List<Membresia> listarProximasAVencer();
 
     /** Recorre todas las membresias activas y actualiza su estado segun la fecha actual. */
     void actualizarEstados();
