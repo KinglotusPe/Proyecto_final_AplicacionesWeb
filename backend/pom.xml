@@ -13,7 +13,7 @@
 
     <artifactId>gym-sistema-backend</artifactId>
     <name>gym-sistema-backend</name>
-    <description>Backend y API para BRUTAL FITNESS (Spring Boot + JPA)</description>
+    <description>Backend y API para BRUTAL FITNESS (Spring Boot + Security + JPA)</description>
 
     <dependencies>
         <!-- ========================================== -->
@@ -27,9 +27,21 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.thymeleaf.extras</groupId>
+            <artifactId>thymeleaf-extras-springsecurity6</artifactId>
+        </dependency>
 
         <!-- ========================================== -->
-        <!-- 2. CAPA BACKEND & PERSISTENCIA (JPA / ORM)  -->
+        <!-- 2. CAPA DE SEGURIDAD & AUTENTICACIÓN (RBAC) -->
+        <!-- ========================================== -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+
+        <!-- ========================================== -->
+        <!-- 3. CAPA BACKEND & PERSISTENCIA (JPA / ORM)  -->
         <!-- ========================================== -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -37,7 +49,7 @@
         </dependency>
 
         <!-- ========================================== -->
-        <!-- 3. DRIVERS DE BASE DE DATOS (DUAL SUPPORT)  -->
+        <!-- 4. DRIVERS DE BASE DE DATOS (DUAL SUPPORT)  -->
         <!-- ========================================== -->
         <dependency>
             <groupId>com.mysql</groupId>
@@ -51,7 +63,7 @@
         </dependency>
 
         <!-- ========================================== -->
-        <!-- 4. VALIDACIÓN DE DATOS (BEAN VALIDATION)    -->
+        <!-- 5. VALIDACIÓN DE DATOS (BEAN VALIDATION)    -->
         <!-- ========================================== -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -59,11 +71,16 @@
         </dependency>
 
         <!-- ========================================== -->
-        <!-- 5. PRUEBAS                                  -->
+        <!-- 6. PRUEBAS                                  -->
         <!-- ========================================== -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

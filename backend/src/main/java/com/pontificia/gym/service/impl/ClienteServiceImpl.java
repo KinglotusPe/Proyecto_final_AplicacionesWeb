@@ -4,14 +4,14 @@ import com.pontificia.gym.entity.Cliente;
 import com.pontificia.gym.repository.ClienteRepository;
 import com.pontificia.gym.service.ClienteService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
-/**
- * Service: contiene la logica de negocio.
- * El Controller nunca llama directo al Repository, siempre pasa por el Service.
- */
 @Service
+@Transactional
 public class ClienteServiceImpl implements ClienteService {
 
     private final ClienteRepository clienteRepository;
@@ -21,26 +21,34 @@ public class ClienteServiceImpl implements ClienteService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Cliente> listarTodos() {
         return clienteRepository.findAll();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Cliente buscarPorId(Long id) {
-        return clienteRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Cliente no encontrado con id " + id));
+        return clienteRepository.findById(id).orElse(null);
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public Optional<Cliente> buscarPorDni(String dni) {
+        return clienteRepository.findByDni(dni);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List<Cliente> buscarPorNombreOApellido(String texto) {
-        if (texto == null || texto.isBlank()) {
-            return clienteRepository.findAll();
-        }
         return clienteRepository.findByNombresContainingIgnoreCaseOrApellidosContainingIgnoreCase(texto, texto);
     }
 
     @Override
     public Cliente guardar(Cliente cliente) {
+        if (cliente.getFechaInscripcion() == null) {
+            cliente.setFechaInscripcion(LocalDate.now());
+        }
         return clienteRepository.save(cliente);
     }
 
@@ -50,6 +58,7 @@ public class ClienteServiceImpl implements ClienteService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public long contarTotal() {
         return clienteRepository.count();
     }

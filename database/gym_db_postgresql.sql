@@ -4,6 +4,7 @@
    ========================================================== */
 
 -- 1. Eliminar tablas previas si existen (orden inverso)
+DROP TABLE IF EXISTS usuario CASCADE;
 DROP TABLE IF EXISTS seguimiento_fisico CASCADE;
 DROP TABLE IF EXISTS asistencia CASCADE;
 DROP TABLE IF EXISTS pago CASCADE;
@@ -113,6 +114,26 @@ CREATE TABLE seguimiento_fisico (
 );
 
 /* ==========================================================
+   TABLA: USUARIO (AUTENTICACIÓN Y ROLES)
+   ========================================================== */
+CREATE TABLE usuario (
+    id BIGSERIAL PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    nombre VARCHAR(100) NOT NULL,
+    rol VARCHAR(30) NOT NULL,
+    activo BOOLEAN NOT NULL DEFAULT TRUE,
+    cliente_id BIGINT NULL,
+    entrenador_id BIGINT NULL,
+    CONSTRAINT fk_usuario_cliente 
+        FOREIGN KEY (cliente_id) REFERENCES cliente(id) 
+        ON DELETE SET NULL ON UPDATE CASCADE,
+    CONSTRAINT fk_usuario_entrenador 
+        FOREIGN KEY (entrenador_id) REFERENCES entrenador(id) 
+        ON DELETE SET NULL ON UPDATE CASCADE
+);
+
+/* ==========================================================
    DATOS DE PRUEBA
    ========================================================== */
 INSERT INTO cliente (dni, nombres, apellidos, edad, telefono, fecha_inscripcion) VALUES
@@ -141,3 +162,9 @@ INSERT INTO asistencia (cliente_id, fecha_hora) VALUES
 INSERT INTO seguimiento_fisico (cliente_id, entrenador_id, fecha_registro, peso_kg, altura_cm, porcentaje_grasa, masa_muscular, objetivo, observaciones) VALUES
 (1, 1, CURRENT_DATE, 76.5, 175.0, 18.0, 35.5, 'Hipertrofia / Ganancia Muscular', 'Progreso óptimo, buena respuesta a la carga de entrenamiento.'),
 (2, 2, CURRENT_DATE, 58.0, 162.0, 21.0, 24.0, 'Definición / Pérdida de Grasa', 'Excelente resistencia en circuito funcional.');
+
+INSERT INTO usuario (username, password, nombre, rol, activo, cliente_id, entrenador_id) VALUES
+('admin', '$2a$10$eAccYoNO32CpArGPl9OxP.4jGzT7mBvHcqIe7tJ9P7KkV6OqN4qC6', 'César Luza (Administrador General)', 'ROLE_ADMIN', TRUE, NULL, NULL),
+('recepcion', '$2a$10$eAccYoNO32CpArGPl9OxP.4jGzT7mBvHcqIe7tJ9P7KkV6OqN4qC6', 'Staff Recepción BRUTAL', 'ROLE_RECEPCIONISTA', TRUE, NULL, NULL),
+('entrenador', '$2a$10$eAccYoNO32CpArGPl9OxP.4jGzT7mBvHcqIe7tJ9P7KkV6OqN4qC6', 'Prof. Marco Antonio Vargas', 'ROLE_ENTRENADOR', TRUE, NULL, 1),
+('72345678', '$2a$10$eAccYoNO32CpArGPl9OxP.4jGzT7mBvHcqIe7tJ9P7KkV6OqN4qC6', 'Juan Carlos Perez Lopez', 'ROLE_CLIENTE', TRUE, 1, NULL);

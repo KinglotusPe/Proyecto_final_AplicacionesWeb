@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head(titulo='Portal del Socio')}"></head>
+<body class="bg-light d-flex flex-column min-vh-100">
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="container mb-5">
+    <!-- Header del Socio -->
+    <div class="card shadow-sm border-0 mb-4 p-4" style="border-radius: 14px; background: linear-gradient(135deg, #111827 0%, #1e293b 100%); color: white; border-left: 6px solid #dc3545 !important;">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div class="d-flex align-items-center gap-3">
+                <div class="bg-danger text-white rounded-circle d-flex align-items-center justify-content-center fs-2" style="width: 65px; height: 65px;">
+                    <i class="bi bi-person-fill"></i>
+                </div>
+                <div>
+                    <h1 class="h3 fw-bold mb-0" th:text="${cliente != null ? cliente.nombreCompleto : 'Socio BRUTAL FITNESS'}">Juan Carlos Perez</h1>
+                    <div class="text-secondary small mt-1">
+                        <span><i class="bi bi-card-text me-1 text-danger"></i> DNI: <strong class="text-light" th:text="${cliente != null ? cliente.dni : '-'}">72345678</strong></span>
+                        <span class="ms-3" th:if="${cliente != null && cliente.telefono != null}"><i class="bi bi-telephone me-1 text-danger"></i> <span th:text="${cliente.telefono}">987654321</span></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Estado de Membresia -->
+            <div class="text-sm-end">
+                <div class="small text-secondary fw-bold text-uppercase">Estado de Membresía</div>
+                <div th:if="${membresiaActiva != null}">
+                    <span class="badge bg-success fs-6 px-3 py-2 mt-1">
+                        <i class="bi bi-check-circle-fill me-1"></i> ACTIVA — <span th:text="${membresiaActiva.tipo}">MENSUAL</span>
+                    </span>
+                    <div class="small text-light mt-1">
+                        Vence: <strong th:text="${#temporals.format(membresiaActiva.fechaVencimiento, 'dd/MM/yyyy')}">30/09/2026</strong>
+                        (<span class="text-warning fw-bold" th:text="${diasRestantes} + ' días restantes'">28 días restantes</span>)
+                    </div>
+                </div>
+                <div th:if="${membresiaActiva == null}">
+                    <span class="badge bg-danger fs-6 px-3 py-2 mt-1">
+                        <i class="bi bi-x-circle-fill me-1"></i> SIN MEMBRESÍA ACTIVA
+                    </span>
+                    <div class="small text-light mt-1">Por favor acércate a recepción para renovar tu plan.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pestañas de Contenido -->
+    <ul class="nav nav-pills mb-4 gap-2" id="pills-tab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active fw-bold px-3" id="pills-membresia-tab" data-bs-toggle="pill" data-bs-target="#pills-membresia" type="button" role="tab">
+                <i class="bi bi-card-checklist me-1"></i> Mis Membresías
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link fw-bold px-3" id="pills-pagos-tab" data-bs-toggle="pill" data-bs-target="#pills-pagos" type="button" role="tab">
+                <i class="bi bi-cash-coin me-1"></i> Historial de Pagos
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link fw-bold px-3" id="pills-progreso-tab" data-bs-toggle="pill" data-bs-target="#pills-progreso" type="button" role="tab">
+                <i class="bi bi-activity me-1"></i> Mi Progreso Físico
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link fw-bold px-3" id="pills-asistencias-tab" data-bs-toggle="pill" data-bs-target="#pills-asistencias" type="button" role="tab">
+                <i class="bi bi-clock-history me-1"></i> Mis Asistencias
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content" id="pills-tabContent">
+        <!-- 1. Mis Membresias -->
+        <div class="tab-pane fade show active" id="pills-membresia" role="tabpanel">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Plan / Tipo</th>
+                                    <th>Fecha de Inicio</th>
+                                    <th>Fecha de Vencimiento</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="m : ${membresias}">
+                                    <td class="fw-bold text-dark" th:text="${m.tipo}">MENSUAL</td>
+                                    <td th:text="${#temporals.format(m.fechaInicio, 'dd/MM/yyyy')}">01/08/2026</td>
+                                    <td th:text="${#temporals.format(m.fechaVencimiento, 'dd/MM/yyyy')}">31/08/2026</td>
+                                    <td>
+                                        <span th:class="${m.estado.name() == 'ACTIVA' ? 'badge bg-success' : 'badge bg-danger'}" th:text="${m.estado}">ACTIVA</span>
+                                    </td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(membresias)}">
+                                    <td colspan="4" class="text-center text-muted py-4">No tienes membresías registradas.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. Historial de Pagos -->
+        <div class="tab-pane fade" id="pills-pagos" role="tabpanel">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Fecha de Pago</th>
+                                    <th>Monto</th>
+                                    <th>Método de Pago</th>
+                                    <th>Próxima Fecha Sugerida</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="p : ${pagos}">
+                                    <td class="fw-semibold" th:text="${#temporals.format(p.fecha, 'dd/MM/yyyy')}">01/08/2026</td>
+                                    <td class="fw-bold text-success" th:text="${'S/ ' + p.monto}">S/ 100.00</td>
+                                    <td>
+                                        <span class="badge bg-dark" th:text="${p.metodoPago}">YAPE</span>
+                                    </td>
+                                    <td th:text="${p.proximaFechaPago != null ? #temporals.format(p.proximaFechaPago, 'dd/MM/yyyy') : '-'}">01/09/2026</td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(pagos)}">
+                                    <td colspan="4" class="text-center text-muted py-4">No tienes pagos registrados.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Mi Progreso Fisico -->
+        <div class="tab-pane fade" id="pills-progreso" role="tabpanel">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Peso</th>
+                                    <th>Altura</th>
+                                    <th>IMC</th>
+                                    <th>% Grasa</th>
+                                    <th>Masa Musc.</th>
+                                    <th>Objetivo</th>
+                                    <th>Observaciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="s : ${seguimientos}">
+                                    <td class="fw-semibold" th:text="${#temporals.format(s.fechaRegistro, 'dd/MM/yyyy')}">27/08/2026</td>
+                                    <td><span class="badge bg-primary" th:text="${s.pesoKg + ' kg'}">76.5 kg</span></td>
+                                    <td th:text="${s.alturaCm != null ? s.alturaCm + ' cm' : '-'}">175 cm</td>
+                                    <td><span class="badge bg-dark" th:text="${s.imc != null ? s.imc : '-'}">25.0</span></td>
+                                    <td th:text="${s.porcentajeGrasa != null ? s.porcentajeGrasa + '%' : '-'}">18%</td>
+                                    <td th:text="${s.masaMuscular != null ? s.masaMuscular + ' kg' : '-'}">35 kg</td>
+                                    <td><span class="badge bg-secondary" th:text="${s.objetivo}">Hipertrofia</span></td>
+                                    <td class="small text-muted" th:text="${s.observaciones != null ? s.observaciones : '-'}">Buen avance</td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(seguimientos)}">
+                                    <td colspan="8" class="text-center text-muted py-4">Aún no tienes evaluaciones físicas registradas por tu entrenador.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. Mis Asistencias -->
+        <div class="tab-pane fade" id="pills-asistencias" role="tabpanel">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Fecha y Hora de Entrada</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="a, iter : ${asistencias}">
+                                    <td class="fw-semibold text-muted" th:text="${iter.count}">1</td>
+                                    <td class="fw-bold text-dark" th:text="${#temporals.format(a.fechaHora, 'dd/MM/yyyy HH:mm:ss')}">27/08/2026 10:30:00</td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(asistencias)}">
+                                    <td colspan="2" class="text-center text-muted py-4">No tienes asistencias registradas.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

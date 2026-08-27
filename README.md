@@ -107,6 +107,17 @@ erDiagram
         varchar(100) objetivo "Hipertrofia, Definición, etc."
         varchar(255) observaciones "Recomendaciones"
     }
+
+    USUARIO {
+        bigint id PK "Auto Increment"
+        varchar(50) username UK "DNI o usuario"
+        varchar(255) password "BCrypt Hash"
+        varchar(100) nombre "Nombre completo"
+        varchar(30) rol "ROLE_ADMIN, ROLE_RECEPCIONISTA, ROLE_ENTRENADOR, ROLE_CLIENTE"
+        boolean activo "Estado de cuenta"
+        bigint cliente_id FK "Vínculo con cliente (opcional)"
+        bigint entrenador_id FK "Vínculo con entrenador (opcional)"
+    }
 ```
 
 ### Scripts SQL Disponibles
@@ -116,9 +127,24 @@ El proyecto incluye scripts DDL y datos de prueba listos para importar:
 
 ---
 
+## 🔐 Seguridad y Control de Acceso por Roles (RBAC)
+
+El sistema integra **Spring Security 6** con protección CSRF, sesiones seguras y encriptación de contraseñas con **BCrypt**.
+
+### 👥 Cuentas de Acceso Preconfiguradas
+
+| Rol | Usuario | Contraseña | Vistas y Alcance Permitido |
+| :--- | :--- | :--- | :--- |
+| 👑 **`ROLE_ADMIN`** *(Admin General)* | `admin` | `admin123` | **Acceso Total**: Panel de control, finanzas, staff de entrenadores, gestión de usuarios, clientes, membresías y cobros. |
+| 💼 **`ROLE_RECEPCIONISTA`** *(Recepción)* | `recepcion` | `recepcion123` | **Atención al Cliente**: Registro de clientes, cobro de pagos, emisión de membresías y control de asistencias. |
+| 🏋️‍♂️ **`ROLE_ENTRENADOR`** *(Instructor)* | `entrenador` | `entrenador123` | **Gestión Deportiva**: Evaluaciones antropométricas, progreso físico, asistencias y alumnos asignados. |
+| 👤 **`ROLE_CLIENTE`** *(Socio / Alumno)* | `72345678` | `cliente123` | **Portal del Socio (`/portal/mi-cuenta`)**: Días de membresía restantes, historial de pagos y evolución de medidas e IMC. |
+
+---
+
 ## 🚀 Módulos y Funcionalidades
 
-### 1. 📊 Panel de Control (Dashboard)
+### 1. 📊 Panel de Control (Dashboard General)
 * **Indicadores en tiempo real**:
   * Total de clientes registrados.
   * Membresías activas.
@@ -129,33 +155,40 @@ El proyecto incluye scripts DDL y datos de prueba listos para importar:
   * Total de entrenadores activos en staff.
   * Fichas antropométricas y evaluaciones de progreso registradas.
 
-### 2. 👥 Módulo de Clientes (`/clientes`)
+### 2. 👤 Portal Exclusivo del Socio (`/portal/mi-cuenta`)
+* Dashboard personal del socio autenticado:
+  * Semáforo de vigencia de su membresía y contador de **días restantes**.
+  * Historial cronológico de todos sus pagos realizados y métodos usados.
+  * Ficha de evolución física (peso, estatura, IMC, % grasa, masa muscular y notas del entrenador).
+  * Registro de todas sus asistencias al gimnasio.
+
+### 3. 👥 Módulo de Clientes (`/clientes`)
 * Registro, edición y eliminación de clientes.
 * Validación de DNI único y datos de contacto (teléfono, edad).
 * Fecha de inscripción inicializada automáticamente con la fecha actual.
 * Buscador interactivo por nombre o apellido.
 
-### 3. 💳 Módulo de Membresías (`/membresias`)
+### 4. 💳 Módulo de Membresías (`/membresias`)
 * **Planes soportados**: `DIARIO`, `SEMANAL`, `MENSUAL`, `TRIMESTRAL`, `ANUAL` y `PERSONALIZADA`.
 * **Cálculo Automático de Vigencia**:
   * Al seleccionar el plan y la fecha de inicio, la fecha de vencimiento se calcula automáticamente tanto en la interfaz (JavaScript en tiempo real) como en el backend.
   * En modo `PERSONALIZADA`, permite ingresar libremente cualquier fecha manual.
 * **Control de Estados**: Actualización automática entre `ACTIVA` y `VENCIDA` según la fecha actual.
 
-### 4. 💵 Módulo de Pagos (`/pagos`)
+### 5. 💵 Módulo de Pagos (`/pagos`)
 * Registro de cobros asociados a un cliente y su método de pago (`EFECTIVO`, `TARJETA`, `YAPE`, `PLIN`, `TRANSFERENCIA`).
 * Pre-llenado inteligente de fecha de pago y proyección automática de la próxima fecha de pago.
 * Cálculo consolidado de recaudación mensual mediante consultas agregadas (`SUM`).
 
-### 5. ⏱️ Módulo de Asistencias (`/asistencias`)
+### 6. ⏱️ Módulo de Asistencias (`/asistencias`)
 * Registro de entrada por cliente con estampación de fecha y hora exacta (`LocalDateTime`).
 * Listado diario cronológico y conteo para el dashboard.
 
-### 6. 🏋️‍♂️ Módulo de Entrenadores (`/entrenadores`)
+### 7. 🏋️‍♂️ Módulo de Entrenadores (`/entrenadores`)
 * Registro del staff de entrenadores y personal trainers de **BRUTAL FITNESS**.
 * Control de especialidades (*Musculación, Crossfit, Funcional, Calistenia, Nutrición*), contacto y estado (`ACTIVO` / `INACTIVO`).
 
-### 7. 📈 Módulo de Progreso Físico (`/seguimientos`)
+### 8. 📈 Módulo de Progreso Físico (`/seguimientos`)
 * Fichas de evaluación antropométrica por cliente.
 * Registro de peso corporal, estatura, cálculo automático de **IMC**, porcentaje de grasa y masa muscular.
 * Seguimiento de objetivos deportivos y observaciones del entrenador.
