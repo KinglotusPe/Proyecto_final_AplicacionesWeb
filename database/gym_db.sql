@@ -1,8 +1,7 @@
--- ==========================================================
--- SISTEMA DE GESTIÓN PARA GIMNASIO (GYM SISTEMA)
--- Script de Creación de Base de Datos y Datos de Prueba
--- Motor: MySQL 8.x
--- ==========================================================
+/* ==========================================================
+   BRUTAL FITNESS - SISTEMA DE GESTIÓN
+   Script DDL y Datos de Prueba para MySQL 8.x
+   ========================================================== */
 
 -- 1. Crear Base de Datos
 CREATE DATABASE IF NOT EXISTS gym_db 
@@ -11,15 +10,15 @@ COLLATE utf8mb4_unicode_ci;
 
 USE gym_db;
 
--- 2. Eliminar tablas si existen (orden inverso por llaves foraneas)
+-- 2. Eliminar tablas previas si existen (orden inverso)
 DROP TABLE IF EXISTS asistencia;
 DROP TABLE IF EXISTS pago;
 DROP TABLE IF EXISTS membresia;
 DROP TABLE IF EXISTS cliente;
 
--- ==========================================================
--- TABLA: CLIENTE
--- ==========================================================
+/* ==========================================================
+   TABLA: CLIENTE
+   ========================================================== */
 CREATE TABLE cliente (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     dni VARCHAR(15) NOT NULL UNIQUE,
@@ -30,9 +29,9 @@ CREATE TABLE cliente (
     fecha_inscripcion DATE NULL
 ) ENGINE=InnoDB;
 
--- ==========================================================
--- TABLA: MEMBRESIA
--- ==========================================================
+/* ==========================================================
+   TABLA: MEMBRESIA
+   ========================================================== */
 CREATE TABLE membresia (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     cliente_id BIGINT NOT NULL,
@@ -45,9 +44,9 @@ CREATE TABLE membresia (
         ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB;
 
--- ==========================================================
--- TABLA: PAGO
--- ==========================================================
+/* ==========================================================
+   TABLA: PAGO
+   ========================================================== */
 CREATE TABLE pago (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     cliente_id BIGINT NOT NULL,
@@ -60,9 +59,9 @@ CREATE TABLE pago (
         ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB;
 
--- ==========================================================
--- TABLA: ASISTENCIA
--- ==========================================================
+/* ==========================================================
+   TABLA: ASISTENCIA
+   ========================================================== */
 CREATE TABLE asistencia (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     cliente_id BIGINT NOT NULL,
@@ -72,9 +71,9 @@ CREATE TABLE asistencia (
         ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB;
 
--- ==========================================================
--- DATOS DE PRUEBA (OPCIONAL)
--- ==========================================================
+/* ==========================================================
+   DATOS DE PRUEBA (OPCIONAL)
+   ========================================================== */
 INSERT INTO cliente (dni, nombres, apellidos, edad, telefono, fecha_inscripcion) VALUES
 ('72345678', 'Juan Carlos', 'Perez Lopez', 28, '987654321', CURDATE()),
 ('45891234', 'Maria Elena', 'Gomez Quispe', 24, '912345678', CURDATE()),
