@@ -205,9 +205,17 @@ src/main/resources/
 
 ---
 
-## 👨‍💻 Autoría y Contexto Académico
+## 👥 Autores y Equipo de Desarrollo
 
-* **Gimnasio:** **BRUTAL FITNESS** (Jr. José Santos Chocano, Distrito de Jesús Nazareno, Ayacucho).
-* **Institución:** Escuela de Educación Superior Tecnológica Privada **La Pontificia** (Ayacucho, Perú).
-* **Asignatura:** *Ingeniería de Sistemas de Información*.
-* **Autor / Desarrollador Original:** Mari Chuchón (`mari@lapontificia.edu.pe`).
+Proyecto desarrollado para la carrera de **Ingeniería de Sistemas de Información** en la **Escuela de Educación Superior Tecnológica Privada La Pontificia** (Ayacucho, Perú — 2026).
+
+### 🎓 Integrantes del Equipo:
+1. 👨‍💻 **César Daniel Luza Cordova**
+2. 👨‍💻 **Lopez Berrocal Juhm Jorge**
+3. 👨‍💻 **Meneses Leche Luis Angel**
+4. 👩‍💻 **Chuchon Gutierrez Lidia Marisol**
+5. 👨‍💻 **Amiquero Martínez Kocyin Renato**
+6. 👨‍💻 **Gamboa Llamocca John Carlos**
+
+* **Gimnasio Beneficiario:** **BRUTAL FITNESS** (Jr. José Santos Chocano, Distrito de Jesús Nazareno, Ayacucho).
+* **Título del Proyecto:** *Sistema web de gestión para BRUTAL FITNESS: Gestión de clientes, membresías, pagos y asistencias*.
