@@ -2,9 +2,11 @@ package com.pontificia.gym.controller;
 
 import com.pontificia.gym.entity.Asistencia;
 import com.pontificia.gym.entity.Cliente;
+import com.pontificia.gym.entity.Entrenador;
 import com.pontificia.gym.entity.Membresia;
 import com.pontificia.gym.service.AsistenciaService;
 import com.pontificia.gym.service.ClienteService;
+import com.pontificia.gym.service.EntrenadorService;
 import com.pontificia.gym.service.MembresiaService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -23,13 +25,19 @@ import java.util.*;
 public class ControlAccesoController {
 
     private final ClienteService clienteService;
+    private final EntrenadorService entrenadorService;
     private final MembresiaService membresiaService;
     private final AsistenciaService asistenciaService;
 
+    // Registro en memoria de marcajes laborales de entrenadores del día (Entrada / Salida)
+    private static final Map<Long, LocalDateTime> marcajeEntradaEntrenadores = new HashMap<>();
+
     public ControlAccesoController(ClienteService clienteService,
+                                   EntrenadorService entrenadorService,
                                    MembresiaService membresiaService,
                                    AsistenciaService asistenciaService) {
         this.clienteService = clienteService;
+        this.entrenadorService = entrenadorService;
         this.membresiaService = membresiaService;
         this.asistenciaService = asistenciaService;
     }
@@ -49,8 +57,37 @@ public class ControlAccesoController {
         }
 
         String dniLimpio = dni.trim();
-        Optional<Cliente> optCliente = clienteService.buscarPorDni(dniLimpio);
 
+        // 1. Verificar si es Entrenador / Staff Deportivo
+        Optional<Entrenador> optEntrenador = entrenadorService.buscarPorDni(dniLimpio);
+        if (optEntrenador.isPresent()) {
+            Entrenador coach = optEntrenador.get();
+            LocalDateTime ahora = LocalDateTime.now();
+
+            if (!marcajeEntradaEntrenadores.containsKey(coach.getId())) {
+                // Primer marcaje: ENTRADA DE TURNO
+                marcajeEntradaEntrenadores.put(coach.getId(), ahora);
+                redirectAttributes.addFlashAttribute("resultado", "ENTRENADOR_ENTRADA");
+                redirectAttributes.addFlashAttribute("entrenador", coach);
+                redirectAttributes.addFlashAttribute("horaMarcaje", ahora.format(DateTimeFormatter.ofPattern("HH:mm:ss")));
+            } else {
+                // Segundo marcaje: SALIDA DE TURNO
+                LocalDateTime entrada = marcajeEntradaEntrenadores.remove(coach.getId());
+                long minutos = ChronoUnit.MINUTES.between(entrada, ahora);
+                long horas = minutos / 60;
+                long minRestantes = minutos % 60;
+
+                redirectAttributes.addFlashAttribute("resultado", "ENTRENADOR_SALIDA");
+                redirectAttributes.addFlashAttribute("entrenador", coach);
+                redirectAttributes.addFlashAttribute("horaEntrada", entrada.format(DateTimeFormatter.ofPattern("HH:mm:ss")));
+                redirectAttributes.addFlashAttribute("horaSalida", ahora.format(DateTimeFormatter.ofPattern("HH:mm:ss")));
+                redirectAttributes.addFlashAttribute("tiempoTrabajado", horas + "h " + minRestantes + "m");
+            }
+            return "redirect:/asistencias/control-acceso";
+        }
+
+        // 2. Verificar si es Socio / Cliente
+        Optional<Cliente> optCliente = clienteService.buscarPorDni(dniLimpio);
         if (optCliente.isEmpty()) {
             redirectAttributes.addFlashAttribute("resultado", "NO_REGISTRADO");
             redirectAttributes.addFlashAttribute("dniBuscado", dniLimpio);
@@ -112,8 +149,39 @@ public class ControlAccesoController {
         }
 
         String dniLimpio = dni.trim();
-        Optional<Cliente> optCliente = clienteService.buscarPorDni(dniLimpio);
 
+        // 1. Verificar si es Entrenador
+        Optional<Entrenador> optEntrenador = entrenadorService.buscarPorDni(dniLimpio);
+        if (optEntrenador.isPresent()) {
+            Entrenador coach = optEntrenador.get();
+            LocalDateTime ahora = LocalDateTime.now();
+
+            resp.put("perfil", "ENTRENADOR");
+            resp.put("nombreCompleto", coach.getNombreCompleto());
+            resp.put("dni", coach.getDni());
+            resp.put("especialidad", coach.getEspecialidad());
+            resp.put("fotoUrl", "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&auto=format&fit=crop&q=80");
+
+            if (!marcajeEntradaEntrenadores.containsKey(coach.getId())) {
+                marcajeEntradaEntrenadores.put(coach.getId(), ahora);
+                resp.put("status", "ENTRENADOR_ENTRADA");
+                resp.put("horaMarcaje", ahora.format(DateTimeFormatter.ofPattern("HH:mm:ss")));
+            } else {
+                LocalDateTime entrada = marcajeEntradaEntrenadores.remove(coach.getId());
+                long minutos = ChronoUnit.MINUTES.between(entrada, ahora);
+                long horas = minutos / 60;
+                long minRestantes = minutos % 60;
+
+                resp.put("status", "ENTRENADOR_SALIDA");
+                resp.put("horaEntrada", entrada.format(DateTimeFormatter.ofPattern("HH:mm:ss")));
+                resp.put("horaSalida", ahora.format(DateTimeFormatter.ofPattern("HH:mm:ss")));
+                resp.put("tiempoTrabajado", horas + "h " + minRestantes + "m");
+            }
+            return ResponseEntity.ok(resp);
+        }
+
+        // 2. Verificar si es Socio
+        Optional<Cliente> optCliente = clienteService.buscarPorDni(dniLimpio);
         if (optCliente.isEmpty()) {
             resp.put("status", "NO_REGISTRADO");
             resp.put("dni", dniLimpio);
@@ -135,6 +203,7 @@ public class ControlAccesoController {
         boolean reingresoHoy = ingresoPrevio.isPresent();
         String horaPrimerIngreso = reingresoHoy ? ingresoPrevio.get().getFechaHora().format(DateTimeFormatter.ofPattern("HH:mm:ss")) : null;
 
+        resp.put("perfil", "SOCIO");
         resp.put("clienteId", cliente.getId());
         resp.put("nombreCompleto", cliente.getNombreCompleto());
         resp.put("dni", cliente.getDni());
