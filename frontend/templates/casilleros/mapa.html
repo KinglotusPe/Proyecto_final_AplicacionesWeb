@@ -18,13 +18,19 @@
                 Monitoreo en tiempo real de ocupación y liberación automática al escanear QR / DNI en el molinete.
             </p>
         </div>
-        <div class="d-flex gap-2">
+        <div class="d-flex gap-2 flex-wrap">
             <a th:href="@{/asistencias/control-acceso}" class="btn btn-outline-danger btn-sm fw-bold">
                 <i class="bi bi-qr-code-scan me-1"></i> Ir a Control de Acceso
             </a>
             <button class="btn btn-primary btn-sm fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#modalAsignarManual">
                 <i class="bi bi-person-plus me-1"></i> Asignación Manual
             </button>
+            <form th:action="@{/casilleros/liberar-todos}" method="post" onsubmit="return confirm('¿Está seguro de liberar TODOS los casilleros del turno?');">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                <button type="submit" class="btn btn-outline-secondary btn-sm fw-bold">
+                    <i class="bi bi-arrow-repeat me-1"></i> Cierre de Turno / Liberar Todos
+                </button>
+            </form>
         </div>
     </div>
 

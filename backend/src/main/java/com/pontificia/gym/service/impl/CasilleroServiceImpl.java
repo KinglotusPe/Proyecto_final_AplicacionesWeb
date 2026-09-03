@@ -111,6 +111,19 @@ public class CasilleroServiceImpl implements CasilleroService {
     }
 
     @Override
+    public void liberarTodos() {
+        List<Casillero> ocupados = casilleroRepository.findByEstado("OCUPADO");
+        for (Casillero c : ocupados) {
+            c.setEstado("DISPONIBLE");
+            c.setOcupadoPorNombre(null);
+            c.setOcupadoPorDni(null);
+            c.setOcupadoPorTipo(null);
+            c.setFechaOcupacion(null);
+            casilleroRepository.save(c);
+        }
+    }
+
+    @Override
     public Casillero guardar(Casillero casillero) {
         return casilleroRepository.save(casillero);
     }

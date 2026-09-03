@@ -45,6 +45,13 @@ public class CasilleroController {
         return "redirect:/casilleros";
     }
 
+    @PostMapping("/liberar-todos")
+    public String liberarTodos(RedirectAttributes flash) {
+        casilleroService.liberarTodos();
+        flash.addFlashAttribute("success", "🧹 Todos los casilleros han sido liberados para el nuevo turno.");
+        return "redirect:/casilleros";
+    }
+
     @PostMapping("/mantenimiento/{id}")
     public String toggleMantenimiento(@PathVariable("id") Long id, RedirectAttributes flash) {
         casilleroService.buscarPorId(id).ifPresent(c -> {

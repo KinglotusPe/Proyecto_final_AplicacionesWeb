@@ -15,6 +15,7 @@ public interface CasilleroService {
     Casillero asignarCasilleroEspecifico(Long casilleroId, String nombre, String dni, String tipo);
     Optional<Casillero> liberarCasilleroPorDni(String dni);
     void liberarCasilleroPorId(Long id);
+    void liberarTodos();
     Casillero guardar(Casillero casillero);
 
     long contarDisponibles();

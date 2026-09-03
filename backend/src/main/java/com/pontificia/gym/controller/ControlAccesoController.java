@@ -101,20 +101,39 @@ public class ControlAccesoController {
         }
 
         Cliente cliente = optCliente.get();
+
+        // 2.1 Verificar si el socio YA ESTABA ADENTRO usando un casillero -> ESTÁ SALIENDO
+        Optional<Casillero> lockerOcupado = casilleroService.buscarPorDniOcupante(cliente.getDni());
+        if (lockerOcupado.isPresent()) {
+            Casillero locker = lockerOcupado.get();
+            LocalDateTime horaEntrada = locker.getFechaOcupacion() != null ? locker.getFechaOcupacion() : LocalDateTime.now();
+            LocalDateTime ahora = LocalDateTime.now();
+            long minutos = Math.max(1, ChronoUnit.MINUTES.between(horaEntrada, ahora));
+            long horas = minutos / 60;
+            long minRestantes = minutos % 60;
+
+            String tiempoEntrenado = (horas > 0 ? horas + "h " : "") + minRestantes + " min";
+            String numeroLocker = locker.getNumero();
+
+            // Liberar el casillero
+            casilleroService.liberarCasilleroPorDni(cliente.getDni());
+
+            redirectAttributes.addFlashAttribute("resultado", "SOCIO_SALIDA");
+            redirectAttributes.addFlashAttribute("cliente", cliente);
+            redirectAttributes.addFlashAttribute("casilleroLiberado", numeroLocker);
+            redirectAttributes.addFlashAttribute("horaEntrada", horaEntrada.format(DateTimeFormatter.ofPattern("HH:mm:ss")));
+            redirectAttributes.addFlashAttribute("horaSalida", ahora.format(DateTimeFormatter.ofPattern("HH:mm:ss")));
+            redirectAttributes.addFlashAttribute("tiempoEntrenado", tiempoEntrenado);
+
+            return "redirect:/asistencias/control-acceso";
+        }
+
+        // 2.2 Si NO estaba adentro -> ESTÁ INGRESANDO (Validar Membresía)
         List<Membresia> membresias = membresiaService.listarPorCliente(cliente.getId());
         Membresia activa = membresias.stream()
                 .filter(m -> "ACTIVA".equals(m.getEstado().name()))
                 .findFirst()
                 .orElse(null);
-
-        // Verificar si ya registró ingreso hoy para control de seguridad / doble pase
-        List<Asistencia> hoy = asistenciaService.listarHoy();
-        Optional<Asistencia> ingresoPrevio = hoy.stream()
-                .filter(a -> a.getCliente().getId().equals(cliente.getId()))
-                .findFirst();
-
-        boolean reingresoHoy = ingresoPrevio.isPresent();
-        String horaPrimerIngreso = reingresoHoy ? ingresoPrevio.get().getFechaHora().format(DateTimeFormatter.ofPattern("HH:mm:ss")) : null;
 
         if (activa != null && activa.getFechaVencimiento() != null && !activa.getFechaVencimiento().isBefore(LocalDate.now())) {
             // Membresía ACTIVA: Registrar asistencia y asignar casillero libre
@@ -126,20 +145,17 @@ public class ControlAccesoController {
             Casillero locker = casilleroService.asignarCasilleroLibre(cliente.getNombreCompleto(), cliente.getDni(), "SOCIO");
             long diasRestantes = ChronoUnit.DAYS.between(LocalDate.now(), activa.getFechaVencimiento());
 
-            redirectAttributes.addFlashAttribute("resultado", reingresoHoy ? "REINGRESO_ADVERTENCIA" : "PERMITIDO");
+            redirectAttributes.addFlashAttribute("resultado", "PERMITIDO");
             redirectAttributes.addFlashAttribute("cliente", cliente);
             redirectAttributes.addFlashAttribute("membresia", activa);
             redirectAttributes.addFlashAttribute("diasRestantes", diasRestantes);
-            redirectAttributes.addFlashAttribute("reingresoHoy", reingresoHoy);
-            redirectAttributes.addFlashAttribute("horaPrimerIngreso", horaPrimerIngreso);
+            redirectAttributes.addFlashAttribute("horaIngreso", LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")));
             redirectAttributes.addFlashAttribute("casilleroAsignado", locker != null ? locker.getNumero() : "Sin Locker Libre");
         } else {
             // Membresía VENCIDA o SIN MEMBRESÍA
             redirectAttributes.addFlashAttribute("resultado", "DENEGADO");
             redirectAttributes.addFlashAttribute("cliente", cliente);
             redirectAttributes.addFlashAttribute("ultimaMembresia", membresias.isEmpty() ? null : membresias.get(0));
-            redirectAttributes.addFlashAttribute("reingresoHoy", reingresoHoy);
-            redirectAttributes.addFlashAttribute("horaPrimerIngreso", horaPrimerIngreso);
         }
 
         return "redirect:/asistencias/control-acceso";
@@ -202,27 +218,42 @@ public class ControlAccesoController {
         }
 
         Cliente cliente = optCliente.get();
-        List<Membresia> membresias = membresiaService.listarPorCliente(cliente.getId());
-        Membresia activa = membresias.stream()
-                .filter(m -> "ACTIVA".equals(m.getEstado().name()))
-                .findFirst()
-                .orElse(null);
-
-        List<Asistencia> hoy = asistenciaService.listarHoy();
-        Optional<Asistencia> ingresoPrevio = hoy.stream()
-                .filter(a -> a.getCliente().getId().equals(cliente.getId()))
-                .findFirst();
-
-        boolean reingresoHoy = ingresoPrevio.isPresent();
-        String horaPrimerIngreso = reingresoHoy ? ingresoPrevio.get().getFechaHora().format(DateTimeFormatter.ofPattern("HH:mm:ss")) : null;
-
         resp.put("perfil", "SOCIO");
         resp.put("clienteId", cliente.getId());
         resp.put("nombreCompleto", cliente.getNombreCompleto());
         resp.put("dni", cliente.getDni());
         resp.put("fotoUrl", cliente.getFotoUrlOrDefault());
-        resp.put("reingresoHoy", reingresoHoy);
-        resp.put("horaPrimerIngreso", horaPrimerIngreso);
+
+        // Si ya tenía casillero ocupado -> SALIDA
+        Optional<Casillero> lockerOcupado = casilleroService.buscarPorDniOcupante(cliente.getDni());
+        if (lockerOcupado.isPresent()) {
+            Casillero locker = lockerOcupado.get();
+            LocalDateTime horaEntrada = locker.getFechaOcupacion() != null ? locker.getFechaOcupacion() : LocalDateTime.now();
+            LocalDateTime ahora = LocalDateTime.now();
+            long minutos = Math.max(1, ChronoUnit.MINUTES.between(horaEntrada, ahora));
+            long horas = minutos / 60;
+            long minRestantes = minutos % 60;
+
+            String tiempoEntrenado = (horas > 0 ? horas + "h " : "") + minRestantes + " min";
+            String numeroLocker = locker.getNumero();
+
+            casilleroService.liberarCasilleroPorDni(cliente.getDni());
+
+            resp.put("status", "SOCIO_SALIDA");
+            resp.put("casilleroLiberado", numeroLocker);
+            resp.put("horaEntrada", horaEntrada.format(DateTimeFormatter.ofPattern("HH:mm:ss")));
+            resp.put("horaSalida", ahora.format(DateTimeFormatter.ofPattern("HH:mm:ss")));
+            resp.put("tiempoEntrenado", tiempoEntrenado);
+
+            return ResponseEntity.ok(resp);
+        }
+
+        // Si no estaba adentro -> ENTRADA
+        List<Membresia> membresias = membresiaService.listarPorCliente(cliente.getId());
+        Membresia activa = membresias.stream()
+                .filter(m -> "ACTIVA".equals(m.getEstado().name()))
+                .findFirst()
+                .orElse(null);
 
         if (activa != null && activa.getFechaVencimiento() != null && !activa.getFechaVencimiento().isBefore(LocalDate.now())) {
             Asistencia nueva = new Asistencia();
@@ -233,7 +264,7 @@ public class ControlAccesoController {
             Casillero locker = casilleroService.asignarCasilleroLibre(cliente.getNombreCompleto(), cliente.getDni(), "SOCIO");
             long diasRestantes = ChronoUnit.DAYS.between(LocalDate.now(), activa.getFechaVencimiento());
 
-            resp.put("status", reingresoHoy ? "REINGRESO_ADVERTENCIA" : "PERMITIDO");
+            resp.put("status", "PERMITIDO");
             resp.put("plan", activa.getTipo());
             resp.put("vencimiento", activa.getFechaVencimiento().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
             resp.put("diasRestantes", diasRestantes);

@@ -149,6 +149,47 @@
                     </div>
                 </div>
 
+                <!-- 🔵 CASO: SALIDA DE SOCIO (LIBERACIÓN AUTOMÁTICA DE CASILLERO) -->
+                <div th:if="${resultado == 'SOCIO_SALIDA'}" class="card shadow-lg border-0 mb-4" 
+                     style="border-radius: 16px; border-left: 8px solid #0dcaf0 !important; background: #ffffff;">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 pb-3 mb-3 border-bottom">
+                            <span class="badge bg-info text-dark fs-6 px-3 py-2 shadow-sm">
+                                <i class="bi bi-box-arrow-right me-1"></i> SALIDA DE SOCIO REGISTRADA
+                            </span>
+                            <span class="text-info fw-bold small"><i class="bi bi-unlock-fill me-1"></i> CASILLERO LIBERADO</span>
+                        </div>
+
+                        <div class="row align-items-center g-3">
+                            <div class="col-sm-4 text-center">
+                                <img th:src="${cliente != null ? cliente.fotoUrlOrDefault : 'https://ui-avatars.com/api/?name=Socio&background=0dcaf0&color=000&size=200'}" 
+                                     alt="Foto del Socio" 
+                                     class="rounded-circle img-thumbnail shadow border border-3 border-info" 
+                                     style="width: 120px; height: 120px; object-fit: cover;">
+                                <div class="small text-muted mt-1"><i class="bi bi-emoji-smile-fill text-warning me-1"></i> ¡Buen entrenamiento!</div>
+                            </div>
+                            <div class="col-sm-8">
+                                <h3 class="h4 fw-bold text-dark mb-1" th:text="${cliente.nombreCompleto}">Juan Carlos Perez</h3>
+                                <div class="text-muted small mb-2">DNI: <strong class="text-dark" th:text="${cliente.dni}">72345678</strong></div>
+                                
+                                <div class="bg-light p-3 rounded-3 small">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span>Hora de Ingreso: <strong class="text-dark" th:text="${horaEntrada}">08:00:00</strong></span>
+                                        <span>Hora de Salida: <strong class="text-dark" th:text="${horaSalida}">09:30:00</strong></span>
+                                    </div>
+                                    <div class="text-primary fw-bold fs-6 my-1">
+                                        <i class="bi bi-stopwatch-fill me-1"></i> Tiempo entrenado: <span th:text="${tiempoEntrenado}">1h 30 min</span>
+                                    </div>
+                                    <div class="mt-2 pt-2 border-top d-flex align-items-center justify-content-between" th:if="${casilleroLiberado != null}">
+                                        <span class="text-success fw-bold"><i class="bi bi-check-circle-fill text-success me-1"></i> Casillero Liberado:</span>
+                                        <span class="badge bg-success fs-6 px-3 py-1" th:text="${casilleroLiberado}">L-01</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- 🔴 CASO 3: ACCESO DENEGADO (MEMBRESÍA VENCIDA) -->
                 <div th:if="${resultado == 'DENEGADO'}" class="card shadow-lg border-0 mb-4" 
                      style="border-radius: 16px; border-left: 8px solid #dc3545 !important; background: #ffffff;">
