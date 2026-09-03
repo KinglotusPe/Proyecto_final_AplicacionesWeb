@@ -1,0 +1,85 @@
+package com.pontificia.gym.controller;
+
+import com.pontificia.gym.entity.Producto;
+import com.pontificia.gym.entity.Venta;
+import com.pontificia.gym.service.ClienteService;
+import com.pontificia.gym.service.TiendaService;
+import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Controller
+@RequestMapping("/tienda")
+public class TiendaController {
+
+    private final TiendaService tiendaService;
+    private final ClienteService clienteService;
+
+    public TiendaController(TiendaService tiendaService, ClienteService clienteService) {
+        this.tiendaService = tiendaService;
+        this.clienteService = clienteService;
+    }
+
+    @GetMapping
+    public String vistaPos(Model model, @RequestParam(value = "categoria", required = false) Long categoriaId,
+                           @RequestParam(value = "q", required = false) String query) {
+        tiendaService.inicializarCatalogoPorDefecto();
+
+        List<Producto> productos;
+        if (query != null && !query.trim().isEmpty()) {
+            productos = tiendaService.buscarProductos(query);
+        } else if (categoriaId != null) {
+            productos = tiendaService.listarPorCategoria(categoriaId);
+        } else {
+            productos = tiendaService.listarProductos();
+        }
+
+        model.addAttribute("productos", productos);
+        model.addAttribute("categorias", tiendaService.listarCategorias());
+        model.addAttribute("categoriaSeleccionada", categoriaId);
+        model.addAttribute("query", query);
+        model.addAttribute("clientes", clienteService.listarTodos());
+        model.addAttribute("totalVentasHoy", tiendaService.calcularTotalVentasHoy());
+
+        return "tienda/pos";
+    }
+
+    @PostMapping("/cobrar")
+    public String procesarVenta(@RequestParam(value = "clienteId", required = false) Long clienteId,
+                                @RequestParam(value = "metodoPago", defaultValue = "EFECTIVO") String metodoPago,
+                                @RequestParam("productoIds") List<Long> productoIds,
+                                @RequestParam("cantidades") List<Integer> cantidades,
+                                Authentication authentication,
+                                RedirectAttributes flash) {
+        try {
+            List<TiendaService.ItemVentaDto> items = new ArrayList<>();
+            for (int i = 0; i < productoIds.size(); i++) {
+                if (cantidades.get(i) != null && cantidades.get(i) > 0) {
+                    items.add(new TiendaService.ItemVentaDto(productoIds.get(i), cantidades.get(i)));
+                }
+            }
+
+            String cajero = authentication != null ? authentication.getName() : "recepcion";
+            Venta venta = tiendaService.registrarVenta(clienteId, cajero, metodoPago, items);
+
+            flash.addFlashAttribute("success", "¡Venta registrada con éxito! Comprobante: " + venta.getCodigoComprobante() + " por S/ " + venta.getTotal());
+            flash.addFlashAttribute("ultimaVentaId", venta.getId());
+        } catch (Exception e) {
+            flash.addFlashAttribute("error", "Error al procesar venta: " + e.getMessage());
+        }
+
+        return "redirect:/tienda";
+    }
+
+    @GetMapping("/ventas")
+    public String historialVentas(Model model) {
+        model.addAttribute("ventas", tiendaService.listarVentas());
+        model.addAttribute("totalVentasHoy", tiendaService.calcularTotalVentasHoy());
+        return "tienda/ventas_list";
+    }
+}

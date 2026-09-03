@@ -347,6 +347,12 @@ El sistema integra **Spring Security 6** con protección CSRF, sesiones seguras 
 * Generación de **Código QR en tiempo real** vinculado al DNI del alumno para ingreso sin contacto en molinetes y lector de recepción.
 * Botón de impresión y descarga del carnet.
 
+### 14. 🛍️ Módulo de Tienda / Punto de Venta (POS) y Stock (`/tienda`)
+* Pantalla de caja rápida interactiva para recepción.
+* Catálogo visual de productos: Proteínas Whey, Creatina Creapure, Candados para casilleros, Bebidas rehidratantes y Shakers.
+* Carrito de cobro instantáneo, cálculo de vuelto en efectivo, soporte de Yape/Plin/Tarjeta y descuento de inventario en tiempo real.
+* Historial de ventas registradas y emisión de tickets de venta.
+
 ---
 
 ## 🛠️ Stack Tecnológico
