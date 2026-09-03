@@ -337,6 +337,16 @@ El sistema integra **Spring Security 6** con protección CSRF, sesiones seguras 
 * Modales emergentes con instrucciones paso a paso de postura y respiración.
 * Integración directa con las rutinas de los socios en su portal móvil.
 
+### 12. 🥊 Módulo de Clases Grupales y Reserva de Cupos (`/clases`)
+* Cronograma semanal interactivo para **Spinning Indoor, Crossfit & WOD, Boxeo Funcional y Yoga**.
+* Control de aforo en tiempo real con barra de ocupación y cálculo automático de vacantes disponibles.
+* Sistema de reserva de 1-clic y cancelación para los socios autenticados.
+
+### 13. 🪪 Carnet Digital de Socio con Código QR Dinámico
+* Carnet oficial con diseño de tarjeta de membresía en el portal del socio.
+* Generación de **Código QR en tiempo real** vinculado al DNI del alumno para ingreso sin contacto en molinetes y lector de recepción.
+* Botón de impresión y descarga del carnet.
+
 ---
 
 ## 🛠️ Stack Tecnológico

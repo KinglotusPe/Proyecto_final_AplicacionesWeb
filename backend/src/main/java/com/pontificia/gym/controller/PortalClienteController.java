@@ -24,6 +24,7 @@ public class PortalClienteController {
     private final AsistenciaService asistenciaService;
     private final SeguimientoFisicoService seguimientoFisicoService;
     private final RutinaService rutinaService;
+    private final ClaseGrupalService claseGrupalService;
 
     public PortalClienteController(UsuarioService usuarioService,
                                    ClienteService clienteService,
@@ -31,7 +32,8 @@ public class PortalClienteController {
                                    PagoService pagoService,
                                    AsistenciaService asistenciaService,
                                    SeguimientoFisicoService seguimientoFisicoService,
-                                   RutinaService rutinaService) {
+                                   RutinaService rutinaService,
+                                   ClaseGrupalService claseGrupalService) {
         this.usuarioService = usuarioService;
         this.clienteService = clienteService;
         this.membresiaService = membresiaService;
@@ -39,6 +41,7 @@ public class PortalClienteController {
         this.asistenciaService = asistenciaService;
         this.seguimientoFisicoService = seguimientoFisicoService;
         this.rutinaService = rutinaService;
+        this.claseGrupalService = claseGrupalService;
     }
 
     @GetMapping("/mi-cuenta")
@@ -93,6 +96,9 @@ public class PortalClienteController {
 
             // Rutinas de Entrenamiento Personalizadas
             model.addAttribute("rutinas", rutinaService.listarPorCliente(cliente.getId()));
+
+            // Reservas de Clases Grupales
+            model.addAttribute("reservasClases", claseGrupalService.listarReservasPorCliente(cliente.getId()));
         }
 
         return "portal/mi_cuenta";
