@@ -41,7 +41,10 @@ public class ClienteServiceImpl implements ClienteService {
     @Override
     @Transactional(readOnly = true)
     public List<Cliente> buscarPorNombreOApellido(String texto) {
-        return clienteRepository.findByNombresContainingIgnoreCaseOrApellidosContainingIgnoreCase(texto, texto);
+        if (texto == null || texto.trim().isEmpty()) {
+            return listarTodos();
+        }
+        return clienteRepository.findByNombresContainingIgnoreCaseOrApellidosContainingIgnoreCase(texto.trim(), texto.trim());
     }
 
     @Override
