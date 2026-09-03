@@ -355,25 +355,31 @@ INSERT INTO rutina_detalle (rutina_id, ejercicio_id, series, repeticiones, peso_
 (2, 13, 3, 15, 12.5, 45);
 
 -- Tienda / Categorías y Productos
-INSERT INTO categoria_producto (nombre, descripcion) VALUES
-('Suplementos y Proteínas', 'Proteínas whey, creatinas y aminoácidos'),
-('Bebidas y Energizantes', 'Agua mineral, isotónicos y pre-entrenos listos para tomar'),
-('Accesorios Deportivos', 'Straps, guantillas, shakers y toallas');
+INSERT INTO categoria_producto (id, nombre, descripcion) VALUES
+(1, 'Proteínas & Suplementos', 'Proteínas aisladas Whey, creatinas y aminoácidos'),
+(2, 'Bebidas & Hidratación', 'Bebidas rehidratantes, energéticas y agua mineral'),
+(3, 'Accesorios & Candados', 'Candados de casillero, shakers, toallas y straps'),
+(4, 'Snacks & Barras', 'Barras hiperproteicas y frutos secos');
 
-INSERT INTO producto (categoria_id, codigo_barra, nombre, precio_compra, precio_venta, stock_actual, stock_minimo) VALUES
-(1, '775001122334', 'Proteína Whey Gold Standard 2lb', 140.00, 190.00, 15, 3),
-(1, '775001122335', 'Creatina Monohidratada Creapure 300g', 85.00, 120.00, 20, 5),
-(2, '775001122336', 'Bebida Isotónica Gatorade 500ml', 2.50, 4.50, 50, 10),
-(2, '775001122337', 'Agua San Mateo Sin Gas 600ml', 1.20, 2.50, 60, 12),
-(3, '775001122338', 'Shaker Botella BRUTAL FITNESS 700ml', 12.00, 25.00, 30, 5);
+INSERT INTO producto (id, categoria_id, nombre, descripcion, precio_unitario, stock, imagen_url, codigo_barra, precio_compra, precio_venta, stock_actual, stock_minimo) VALUES
+(1, 1, 'Proteína 100% Whey Gold Standard 2lb (Vainilla)', 'Proteína pura aislada de suero de leche para desarrollo muscular magro', 185.00, 15, 'https://images.unsplash.com/photo-1579722820308-d74e571900a9?w=400&auto=format&fit=crop&q=80', '775123456001', 130.00, 185.00, 15, 3),
+(2, 1, 'Creatina Monohidratada Creapure 300g', 'Creatina 100% micronizada de máxima absorción y fuerza explosiva', 110.00, 20, 'https://images.unsplash.com/photo-1593095948071-474c5cc2989d?w=400&auto=format&fit=crop&q=80', '775123456002', 75.00, 110.00, 20, 5),
+(3, 1, 'Pre-Entreno C4 Explosive Energy 30 Serv', 'Fórmula de óxido nítrico, cafeína y beta-alanina para alta intensidad', 135.00, 12, 'https://images.unsplash.com/photo-1584017911766-d451b3d0e843?w=400&auto=format&fit=crop&q=80', '775123456003', 90.00, 135.00, 12, 3),
+(4, 2, 'Bebida Rehidratante Gatorade 500ml (Mora)', 'Reposición rápida de electrolitos, sodio y carbohidratos en entreno', 4.50, 45, 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=400&auto=format&fit=crop&q=80', '775123456004', 2.80, 4.50, 45, 10),
+(5, 2, 'Agua Mineral San Mateo 600ml (Sin Gas)', 'Agua purificada de manantial de montaña', 2.50, 60, 'https://images.unsplash.com/photo-1548839140-29a749e1bc4e?w=400&auto=format&fit=crop&q=80', '775123456005', 1.20, 2.50, 60, 15),
+(6, 2, 'Bebida Energética Monster Energy 473ml', 'Bebida carbonatada con taurina, ginseng y vitaminas del complejo B', 9.00, 30, 'https://images.unsplash.com/photo-1622543925917-763c34d1a86e?w=400&auto=format&fit=crop&q=80', '775123456006', 5.50, 9.00, 30, 8),
+(7, 3, 'Candado de Seguridad Combinación 4 Dígitos', 'Candado reforzado de aleación metálica antirrobo para casilleros y lockers', 22.00, 25, 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=400&auto=format&fit=crop&q=80', '775123456007', 12.00, 22.00, 25, 5),
+(8, 3, 'Shaker Botella Mezcladora BRUTAL 700ml', 'Vaso mezclador con rejilla batidora y compartimento para pastillas y polvo', 18.00, 35, 'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=400&auto=format&fit=crop&q=80', '775123456008', 9.50, 18.00, 35, 5),
+(9, 3, 'Toalla de Microfibra de Secado Rápido', 'Toalla ultra absorbente antibacteriana para máquinas y sudor', 15.00, 20, 'https://images.unsplash.com/photo-1616046229478-9901c5536a45?w=400&auto=format&fit=crop&q=80', '775123456009', 8.00, 15.00, 20, 5),
+(10, 4, 'Barra de Proteína Quest Bar 60g (Chocolate)', '21g de proteína aislada con solo 1g de azúcar y alta fibra', 12.00, 40, 'https://images.unsplash.com/photo-1622484216850-2580536c1e55?w=400&auto=format&fit=crop&q=80', '775123456010', 7.50, 12.00, 40, 10);
 
 -- Ventas POS
-INSERT INTO venta (cliente_id, usuario_id, fecha_hora, total, metodo_pago) VALUES
-(1, 2, NOW(), 124.50, 'YAPE');
+INSERT INTO venta (id, cliente_id, usuario_id, fecha_hora, total, metodo_pago, comprobante_numero) VALUES
+(1, 1, 2, NOW(), 197.00, 'YAPE', 'TKT-000001');
 
 INSERT INTO venta_detalle (venta_id, producto_id, cantidad, precio_unitario, subtotal) VALUES
-(1, 2, 1, 120.00, 120.00),
-(1, 3, 1, 4.50, 4.50);
+(1, 1, 1, 185.00, 185.00),
+(1, 10, 1, 12.00, 12.00);
 
 -- Disciplinas y Clases Grupales
 INSERT INTO disciplina (nombre, descripcion, intensidad) VALUES
