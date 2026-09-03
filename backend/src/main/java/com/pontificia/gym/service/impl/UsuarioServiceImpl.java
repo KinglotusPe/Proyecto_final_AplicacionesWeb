@@ -56,6 +56,17 @@ public class UsuarioServiceImpl implements UsuarioService {
         if (usuario.getPassword() != null && !usuario.getPassword().startsWith("$2a$") && !usuario.getPassword().startsWith("$2b$")) {
             usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
         }
+
+        // Sanitizar asociaciones según el rol
+        if (usuario.getRol() == Rol.ROLE_ADMIN || usuario.getRol() == Rol.ROLE_RECEPCIONISTA) {
+            usuario.setCliente(null);
+            usuario.setEntrenador(null);
+        } else if (usuario.getRol() == Rol.ROLE_CLIENTE) {
+            usuario.setEntrenador(null);
+        } else if (usuario.getRol() == Rol.ROLE_ENTRENADOR) {
+            usuario.setCliente(null);
+        }
+
         return usuarioRepository.save(usuario);
     }
 
