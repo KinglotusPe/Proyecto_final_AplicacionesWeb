@@ -136,10 +136,14 @@ CREATE TABLE usuario (
    ========================================================== */
 CREATE TABLE ejercicio (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    nombre VARCHAR(100) NOT NULL UNIQUE,
+    nombre VARCHAR(120) NOT NULL UNIQUE,
     grupo_muscular VARCHAR(50) NOT NULL,
-    descripcion TEXT NULL,
-    nivel_dificultad VARCHAR(30) DEFAULT 'Intermedio'
+    equipamiento VARCHAR(60) NULL,
+    nivel VARCHAR(30) DEFAULT 'Intermedio',
+    instrucciones TEXT NULL,
+    imagen_url VARCHAR(500) NULL,
+    gif_url VARCHAR(500) NULL,
+    categoria VARCHAR(50) NULL
 ) ENGINE=InnoDB;
 
 CREATE TABLE rutina (
@@ -317,16 +321,23 @@ INSERT INTO usuario (username, password, nombre, rol, activo, cliente_id, entren
 ('entrenador', '$2a$10$eAccYoNO32CpArGPl9OxP.4jGzT7mBvHcqIe7tJ9P7KkV6OqN4qC6', 'Prof. Marco Antonio Vargas', 'ROLE_ENTRENADOR', TRUE, NULL, 1),
 ('72345678', '$2a$10$eAccYoNO32CpArGPl9OxP.4jGzT7mBvHcqIe7tJ9P7KkV6OqN4qC6', 'Juan Carlos Perez Lopez', 'ROLE_CLIENTE', TRUE, 1, NULL);
 
--- Banco de Ejercicios
-INSERT INTO ejercicio (nombre, grupo_muscular, descripcion, nivel_dificultad) VALUES
-('Press de Banca Plano', 'Pecho', 'Empuje horizontal con barra para pectoral mayor', 'Intermedio'),
-('Press Inclinado con Mancuernas', 'Pecho', 'Enfocado en el haz clavicular del pectoral', 'Intermedio'),
-('Jalón al Pecho', 'Espalda', 'Tracción vertical en polea para dorsal ancho', 'Principiante'),
-('Remo con Barra', 'Espalda', 'Tracción horizontal para grosor de espalda', 'Avanzado'),
-('Sentadilla Libre con Barra', 'Piernas', 'Ejercicio compuesto para cuádriceps y glúteos', 'Avanzado'),
-('Prensa Inclinada 45°', 'Piernas', 'Empuje de piernas en máquina guiada', 'Principiante'),
-('Curl de Bíceps con Barra Z', 'Brazos', 'Flexión de codo con barra ergonómica', 'Principiante'),
-('Extensión de Tríceps en Polea', 'Brazos', 'Aislamiento de las tres cabezas del tríceps', 'Principiante');
+-- Banco de Ejercicios con Animaciones GIF Reales
+INSERT INTO ejercicio (id, nombre, grupo_muscular, equipamiento, nivel, instrucciones, imagen_url, gif_url, categoria) VALUES
+(1, 'Press de Banca en Máquina Smith', 'Pecho', 'Máquina Smith', 'Intermedio', '1. Coloca la banca plana en el centro de la máquina Smith.\n2. Sujeta la barra con agarre ligeramente ancho.\n3. Desciende la barra controlando el peso hacia el pecho.\n4. Empuja contrayendo los pectorales.', 'https://cdn.jsdelivr.net/gh/JahelCuadrado/ExerciseGymGifsDB@v1.1.0/pectorals/smith-wide-grip-bench-press.gif', 'https://cdn.jsdelivr.net/gh/JahelCuadrado/ExerciseGymGifsDB@v1.1.0/pectorals/smith-wide-grip-bench-press.gif', 'Fuerza'),
+(2, 'Fondos en Paralelas para Pecho', 'Pecho', 'Barras Paralelas', 'Intermedio', '1. Inclina el torso hacia adelante.\n2. Flexiona los codos a 90°.\n3. Empuja con fuerza con el pecho.', 'https://cdn.jsdelivr.net/gh/JahelCuadrado/ExerciseGymGifsDB@v1.1.0/pectorals/weighted-straight-bar-dip.gif', 'https://cdn.jsdelivr.net/gh/JahelCuadrado/ExerciseGymGifsDB@v1.1.0/pectorals/weighted-straight-bar-dip.gif', 'Fuerza'),
+(3, 'Flexiones con Manos Abiertas', 'Pecho', 'Peso Corporal', 'Principiante', '1. Separa las manos más allá del ancho de hombros.\n2. Baja el pecho hasta rozar el suelo.\n3. Empuja manteniendo el core activo.', 'https://cdn.jsdelivr.net/gh/JahelCuadrado/ExerciseGymGifsDB@v1.1.0/pectorals/wide-hand-push-up.gif', 'https://cdn.jsdelivr.net/gh/JahelCuadrado/ExerciseGymGifsDB@v1.1.0/pectorals/wide-hand-push-up.gif', 'Resistencia'),
+(4, 'Remo Inclinado en Máquina Smith', 'Espalda', 'Máquina Smith', 'Intermedio', '1. Inclina el torso a 45° manteniendo la espalda recta.\n2. Jala la barra hacia el abdomen bajo.\n3. Aprieta las escápulas.', 'https://cdn.jsdelivr.net/gh/JahelCuadrado/ExerciseGymGifsDB@v1.1.0/upper-back/smith-bent-over-row.gif', 'https://cdn.jsdelivr.net/gh/JahelCuadrado/ExerciseGymGifsDB@v1.1.0/upper-back/smith-bent-over-row.gif', 'Hipertrofia'),
+(5, 'Remo Unilateral a una Mano', 'Espalda', 'Máquina Smith', 'Intermedio', '1. Conduce el codo hacia la cadera.\n2. Concéntrate en el dorsal ancho.\n3. Controla el descenso.', 'https://cdn.jsdelivr.net/gh/JahelCuadrado/ExerciseGymGifsDB@v1.1.0/upper-back/smith-one-arm-row.gif', 'https://cdn.jsdelivr.net/gh/JahelCuadrado/ExerciseGymGifsDB@v1.1.0/upper-back/smith-one-arm-row.gif', 'Aislamiento'),
+(6, 'Remo Invertido en Suspensión (TRX)', 'Espalda', 'Correas TRX', 'Principiante', '1. Sujeta los manerales inclinándote hacia atrás.\n2. Tira del pecho hacia las manos.\n3. Baja despacio.', 'https://cdn.jsdelivr.net/gh/JahelCuadrado/ExerciseGymGifsDB@v1.1.0/upper-back/suspended-row.gif', 'https://cdn.jsdelivr.net/gh/JahelCuadrado/ExerciseGymGifsDB@v1.1.0/upper-back/suspended-row.gif', 'Funcional'),
+(7, 'Sentadilla Búlgara con Banda', 'Piernas', 'Banda / Mancuerna', 'Intermedio', '1. Apoya el empeine en un banco trasero.\n2. Baja la rodilla delantera a 90°.\n3. Empuja con el talón.', 'https://cdn.jsdelivr.net/gh/JahelCuadrado/ExerciseGymGifsDB@v1.1.0/quads/band-one-arm-single-leg-split-squat.gif', 'https://cdn.jsdelivr.net/gh/JahelCuadrado/ExerciseGymGifsDB@v1.1.0/quads/band-one-arm-single-leg-split-squat.gif', 'Hipertrofia'),
+(8, 'Saltos Pliométricos de Potencia', 'Piernas', 'Peso Corporal', 'Intermedio', '1. Carga energía elástica en los cuádriceps.\n2. Salta con máxima potencia.\n3. Aterriza en flexión suave.', 'https://cdn.jsdelivr.net/gh/JahelCuadrado/ExerciseGymGifsDB@v1.1.0/quads/backward-jump.gif', 'https://cdn.jsdelivr.net/gh/JahelCuadrado/ExerciseGymGifsDB@v1.1.0/quads/backward-jump.gif', 'Pliometría'),
+(9, 'Press Militar de Hombros', 'Hombros', 'Banda / Mancuernas', 'Principiante', '1. Empuja la carga por encima de la cabeza.\n2. Extiende brazos sin arquear la espalda.\n3. Desciende con control.', 'https://cdn.jsdelivr.net/gh/JahelCuadrado/ExerciseGymGifsDB@v1.1.0/delts/band-shoulder-press.gif', 'https://cdn.jsdelivr.net/gh/JahelCuadrado/ExerciseGymGifsDB@v1.1.0/delts/band-shoulder-press.gif', 'Fuerza'),
+(10, 'Elevaciones Laterales para Deltoides', 'Hombros', 'Banda / Mancuernas', 'Principiante', '1. Eleva los brazos hasta la altura de los hombros.\n2. Mantén 1 segundo en la contracción.\n3. Baja despacio.', 'https://cdn.jsdelivr.net/gh/JahelCuadrado/ExerciseGymGifsDB@v1.1.0/delts/band-front-lateral-raise.gif', 'https://cdn.jsdelivr.net/gh/JahelCuadrado/ExerciseGymGifsDB@v1.1.0/delts/band-front-lateral-raise.gif', 'Aislamiento'),
+(11, 'Pájaros para Hombro Posterior', 'Hombros', 'Banda / Mancuernas', 'Intermedio', '1. Inclina el torso al frente.\n2. Abre los brazos hacia los costados apretando el deltoides posterior.\n3. Regresa suavemente.', 'https://cdn.jsdelivr.net/gh/JahelCuadrado/ExerciseGymGifsDB@v1.1.0/delts/band-reverse-fly.gif', 'https://cdn.jsdelivr.net/gh/JahelCuadrado/ExerciseGymGifsDB@v1.1.0/delts/band-reverse-fly.gif', 'Aislamiento'),
+(12, 'Curl de Bíceps Alterno con Barra', 'Brazos', 'Barra / Mancuerna', 'Principiante', '1. Flexiona el codo levantando la carga hacia el pecho.\n2. Aprieta el bíceps arriba.\n3. Baja despacio.', 'https://cdn.jsdelivr.net/gh/JahelCuadrado/ExerciseGymGifsDB@v1.1.0/biceps/barbell-alternate-biceps-curl.gif', 'https://cdn.jsdelivr.net/gh/JahelCuadrado/ExerciseGymGifsDB@v1.1.0/biceps/barbell-alternate-biceps-curl.gif', 'Hipertrofia'),
+(13, 'Curl Concentrado de Bíceps', 'Brazos', 'Mancuerna / Banda', 'Principiante', '1. Apoya el codo en la cara interna del muslo.\n2. Flexiona aislando el bíceps.\n3. Controla la bajada.', 'https://cdn.jsdelivr.net/gh/JahelCuadrado/ExerciseGymGifsDB@v1.1.0/biceps/band-concentration-curl.gif', 'https://cdn.jsdelivr.net/gh/JahelCuadrado/ExerciseGymGifsDB@v1.1.0/biceps/band-concentration-curl.gif', 'Aislamiento'),
+(14, 'Bicicleta Abdominal (Air Bike Crunch)', 'Core', 'Colchoneta', 'Principiante', '1. Alterna codo hacia rodilla contraria.\n2. Mantén tensión constante en los oblicuos.\n3. Movimiento fluido.', 'https://cdn.jsdelivr.net/gh/JahelCuadrado/ExerciseGymGifsDB@v1.1.0/abs/air-bike.gif', 'https://cdn.jsdelivr.net/gh/JahelCuadrado/ExerciseGymGifsDB@v1.1.0/abs/air-bike.gif', 'Definición'),
+(15, 'Abdominales Sit-Up Clásicos', 'Core', 'Colchoneta', 'Principiante', '1. Eleva el torso flexionando el abdomen.\n2. Llega hasta quedar sentado.\n3. Desciende vértebra por vértebra.', 'https://cdn.jsdelivr.net/gh/JahelCuadrado/ExerciseGymGifsDB@v1.1.0/abs/3-4-sit-up.gif', 'https://cdn.jsdelivr.net/gh/JahelCuadrado/ExerciseGymGifsDB@v1.1.0/abs/3-4-sit-up.gif', 'Fuerza');
 
 -- Rutinas
 INSERT INTO rutina (cliente_id, entrenador_id, nombre, dia_semana, ejercicios, nivel, observaciones) VALUES

@@ -62,187 +62,213 @@ public class EjercicioServiceImpl implements EjercicioService {
 
     @Override
     public void inicializarDatasetEjercicios() {
-        if (ejercicioRepository.count() >= 15) {
+        // Limpiamos o resincronizamos si hay registros incompletos
+        long validCount = ejercicioRepository.findAll().stream()
+                .filter(e -> e.getGifUrl() != null && e.getGifUrl().contains("cdn.jsdelivr.net"))
+                .count();
+
+        if (validCount >= 15) {
             return;
         }
 
+        ejercicioRepository.deleteAll();
+
         List<Ejercicio> dataset = new ArrayList<>();
+        String baseCdn = "https://cdn.jsdelivr.net/gh/JahelCuadrado/ExerciseGymGifsDB@v1.1.0/";
 
         // 1. PECHO
         dataset.add(Ejercicio.builder()
-                .nombre("Press de Banca Plano con Barra")
+                .nombre("Press de Banca en Máquina Smith")
+                .grupoMuscular("Pecho")
+                .categoria("Fuerza e Hipertrofia")
+                .equipamiento("Máquina Smith")
+                .nivel("Intermedio")
+                .instrucciones("1. Coloca la banca plana en el centro de la máquina Smith.\n2. Sujeta la barra con un agarre ligeramente más ancho que los hombros.\n3. Desengancha los seguros y desciende la barra hacia el pecho medio de forma controlada.\n4. Empuja con fuerza contrayendo los pectorales sin bloquear los codos.")
+                .imagenUrl(baseCdn + "pectorals/smith-wide-grip-bench-press.gif")
+                .gifUrl(baseCdn + "pectorals/smith-wide-grip-bench-press.gif")
+                .build());
+
+        dataset.add(Ejercicio.builder()
+                .nombre("Fondos en Paralelas para Pecho")
                 .grupoMuscular("Pecho")
                 .categoria("Fuerza")
-                .equipamiento("Barra Olímpica")
+                .equipamiento("Barras Paralelas")
                 .nivel("Intermedio")
-                .instrucciones("1. Acuéstate en la banca plana con los ojos bajo la barra.\n2. Sujeta la barra con un agarre ligeramente más ancho que los hombros.\n3. Desengancha y baja la barra de forma controlada hacia la parte media del pecho.\n4. Empuja con fuerza hacia arriba extendiendo los brazos sin bloquear los codos.")
-                .imagenUrl("https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/exercises/Barbell_Bench_Press_Medium_Grip/0.jpg")
-                .gifUrl("https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/exercises/Barbell_Bench_Press_Medium_Grip/animation.gif")
+                .instrucciones("1. Sujétate en las barras paralelas inclinando el torso ligeramente hacia adelante.\n2. Flexiona los codos bajando hasta que los hombros queden a la altura de los codos (90°).\n3. Empuja hacia arriba con los pectorales hasta la posición inicial.")
+                .imagenUrl(baseCdn + "pectorals/weighted-straight-bar-dip.gif")
+                .gifUrl(baseCdn + "pectorals/weighted-straight-bar-dip.gif")
                 .build());
 
         dataset.add(Ejercicio.builder()
-                .nombre("Press Inclinado con Mancuernas")
+                .nombre("Flexiones con Manos Abiertas")
                 .grupoMuscular("Pecho")
-                .categoria("Hipertrofia")
-                .equipamiento("Mancuernas")
-                .nivel("Intermedio")
-                .instrucciones("1. Ajusta la banca a una inclinación de 30° a 45°.\n2. Sube las mancuernas al pecho con la ayuda de tus rodillas.\n3. Empuja las mancuernas verticalmente hacia arriba juntándolas sin chocar.\n4. Desciende lentamente estirando la porción superior del pectoral.")
-                .imagenUrl("https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/exercises/Incline_Dumbbell_Press/0.jpg")
-                .gifUrl("https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/exercises/Incline_Dumbbell_Press/animation.gif")
-                .build());
-
-        dataset.add(Ejercicio.builder()
-                .nombre("Aperturas en Poleas Cruzadas (Cruces de Polea)")
-                .grupoMuscular("Pecho")
-                .categoria("Aislamiento")
-                .equipamiento("Polea Doble")
+                .categoria("Resistencia")
+                .equipamiento("Peso Corporal")
                 .nivel("Principiante")
-                .instrucciones("1. Coloca las poleas a la altura de los hombros o alta.\n2. Da un paso adelante manteniendo el torso ligeramente inclinado.\n3. Junta las manos al frente realizando un movimiento de abrazo circular.\n4. Vuelve lentamente controlando la resistencia.")
-                .imagenUrl("https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/exercises/Cable_Crossover/0.jpg")
-                .gifUrl("https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/exercises/Cable_Crossover/animation.gif")
+                .instrucciones("1. Coloca las manos en el suelo separadas más allá del ancho de hombros.\n2. Mantén el abdomen tenso y baja el pecho hasta rozar el suelo.\n3. Empuja el piso con fuerza manteniendo el cuerpo en línea recta.")
+                .imagenUrl(baseCdn + "pectorals/wide-hand-push-up.gif")
+                .gifUrl(baseCdn + "pectorals/wide-hand-push-up.gif")
+                .build());
+
+        dataset.add(Ejercicio.builder()
+                .nombre("Flexiones Explosivas Superman")
+                .grupoMuscular("Pecho")
+                .categoria("Pliometría / Potencia")
+                .equipamiento("Peso Corporal")
+                .nivel("Avanzado")
+                .instrucciones("1. Inicia en posición estándar de flexión.\n2. Baja rápido y empuja con máxima potencia despegando manos y pies del suelo.\n3. Extiende los brazos al frente en el aire y aterriza suavemente absorbiendo el impacto.")
+                .imagenUrl(baseCdn + "pectorals/superman-push-up.gif")
+                .gifUrl(baseCdn + "pectorals/superman-push-up.gif")
                 .build());
 
         // 2. ESPALDA
         dataset.add(Ejercicio.builder()
-                .nombre("Jalón al Pecho en Polea Alta")
+                .nombre("Remo Inclinado en Máquina Smith")
                 .grupoMuscular("Espalda")
-                .categoria("Hipertrofia")
-                .equipamiento("Polea Alta / Lat Machine")
-                .nivel("Principiante")
-                .instrucciones("1. Siéntate con las piernas ajustadas en los cojines.\n2. Sujeta la barra con agarre prono ancho.\n3. Tira de la barra hacia la parte superior del pecho contrayendo los dorsales.\n4. Controla la fase excéntrica estirando completamente la espalda.")
-                .imagenUrl("https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/exercises/Wide_Grip_Lat_Pulldown/0.jpg")
-                .gifUrl("https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/exercises/Wide_Grip_Lat_Pulldown/animation.gif")
+                .categoria("Fuerza e Hipertrofia")
+                .equipamiento("Máquina Smith")
+                .nivel("Intermedio")
+                .instrucciones("1. Inclina el torso a 45° manteniendo la espalda completamente recta y pecho erguido.\n2. Sujeta la barra en pronación y jala hacia la parte baja del abdomen.\n3. Aprieta las escápulas 1 segundo y regresa controlando el peso.")
+                .imagenUrl(baseCdn + "upper-back/smith-bent-over-row.gif")
+                .gifUrl(baseCdn + "upper-back/smith-bent-over-row.gif")
                 .build());
 
         dataset.add(Ejercicio.builder()
-                .nombre("Remo con Barra Inclinado")
+                .nombre("Remo Unilateral en Máquina")
                 .grupoMuscular("Espalda")
-                .categoria("Fuerza")
-                .equipamiento("Barra")
-                .nivel("Avanzado")
-                .instrucciones("1. Inclina el torso hacia adelante unos 45° manteniendo la espalda recta.\n2. Sujeta la barra y jala hacia el ombligo.\n3. Aprieta los omóplatos en la contracción máxima durante 1 segundo.\n4. Baja la barra de forma controlada.")
-                .imagenUrl("https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/exercises/Bent_Over_Barbell_Row/0.jpg")
-                .gifUrl("https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/exercises/Bent_Over_Barbell_Row/animation.gif")
+                .categoria("Aislamiento")
+                .equipamiento("Máquina Smith / Mancuerna")
+                .nivel("Intermedio")
+                .instrucciones("1. Apóyate con una mano y jala la carga con el brazo contrario.\n2. Conduce el codo pegado al costado hacia la cadera.\n3. Concéntrate en la contracción del dorsal ancho.")
+                .imagenUrl(baseCdn + "upper-back/smith-one-arm-row.gif")
+                .gifUrl(baseCdn + "upper-back/smith-one-arm-row.gif")
                 .build());
 
         dataset.add(Ejercicio.builder()
-                .nombre("Remo en Polea Baja con Agarre Gironda")
+                .nombre("Remo Invertido en Suspensión (TRX)")
                 .grupoMuscular("Espalda")
-                .categoria("Hipertrofia")
-                .equipamiento("Polea Baja")
+                .categoria("Fuerza Funcional")
+                .equipamiento("Correas TRX / Barra Baja")
                 .nivel("Principiante")
-                .instrucciones("1. Siéntate con los pies en los apoyos y rodillas ligeramente flexionadas.\n2. Jala el maneral V hacia el abdomen manteniendo la columna neutra.\n3. Retrae las escápulas y regresa suavemente.")
-                .imagenUrl("https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/exercises/Seated_Cable_Rows/0.jpg")
-                .gifUrl("https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/exercises/Seated_Cable_Rows/animation.gif")
+                .instrucciones("1. Sujeta los manerales inclinándote hacia atrás con talones firmes en el suelo.\n2. Tira del pecho hacia las manos manteniendo el cuerpo rígido como una tabla.\n3. Baja despacio sintiendo el trabajo en los dorsales y romboides.")
+                .imagenUrl(baseCdn + "upper-back/suspended-row.gif")
+                .gifUrl(baseCdn + "upper-back/suspended-row.gif")
                 .build());
 
         // 3. PIERNAS
         dataset.add(Ejercicio.builder()
-                .nombre("Sentadilla Trasera con Barra")
-                .grupoMuscular("Piernas")
-                .categoria("Fuerza")
-                .equipamiento("Barra y Rack")
-                .nivel("Avanzado")
-                .instrucciones("1. Coloca la barra sobre los trapecios y separa los pies al ancho de hombros.\n2. Desciende empujando las caderas hacia atrás hasta romper el paralelo (90°).\n3. Empuja a través de los talones y sube con la espalda firme.")
-                .imagenUrl("https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/exercises/Barbell_Full_Squat/0.jpg")
-                .gifUrl("https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/exercises/Barbell_Full_Squat/animation.gif")
-                .build());
-
-        dataset.add(Ejercicio.builder()
-                .nombre("Prensa de Piernas Inclinada 45°")
+                .nombre("Sentadilla Búlgara con Banda / Mancuerna")
                 .grupoMuscular("Piernas")
                 .categoria("Hipertrofia")
-                .equipamiento("Máquina de Prensa")
-                .nivel("Principiante")
-                .instrucciones("1. Apoya la espalda por completo en el respaldo de la máquina.\n2. Coloca los pies al ancho de hombros en la plataforma.\n3. Desbloquea y baja el peso hasta formar 90° con las rodillas.\n4. Empuja sin bloquear completamente las rodillas al final.")
-                .imagenUrl("https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/exercises/Leg_Press/0.jpg")
-                .gifUrl("https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/exercises/Leg_Press/animation.gif")
+                .equipamiento("Banda / Mancuernas / Banco")
+                .nivel("Intermedio")
+                .instrucciones("1. Apoya el empeine de un pie en un banco detrás de ti.\n2. Desciende con la pierna delantera flexionando la rodilla a 90°.\n3. Mantén el torso erguido y empuja con el talón de la pierna adelantada para subir.")
+                .imagenUrl(baseCdn + "quads/band-one-arm-single-leg-split-squat.gif")
+                .gifUrl(baseCdn + "quads/band-one-arm-single-leg-split-squat.gif")
                 .build());
 
         dataset.add(Ejercicio.builder()
-                .nombre("Extensión de Cuádriceps en Máquina")
+                .nombre("Saltos Pliométricos de Potencia")
                 .grupoMuscular("Piernas")
-                .categoria("Aislamiento")
-                .equipamiento("Máquina de Extensiones")
-                .nivel("Principiante")
-                .instrucciones("1. Ajusta la almohadilla sobre la espinilla inferior y apoya la espalda.\n2. Extiende las piernas hacia arriba hasta la horizontal contrayendo los cuádriceps.\n3. Mantén 1 segundo arriba y desciende suavemente.")
-                .imagenUrl("https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/exercises/Leg_Extensions/0.jpg")
-                .gifUrl("https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/exercises/Leg_Extensions/animation.gif")
-                .build());
-
-        dataset.add(Ejercicio.builder()
-                .nombre("Curl Femoral Tumbado")
-                .grupoMuscular("Piernas")
-                .categoria("Aislamiento")
-                .equipamiento("Máquina Femoral")
-                .nivel("Principiante")
-                .instrucciones("1. Tiéndete boca abajo con los tobillos bajo el rodillo acolchado.\n2. Flexiona las piernas llevando los talones hacia los glúteos.\n3. Aguanta la tensión en los isquiosurales y baja lentamente.")
-                .imagenUrl("https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/exercises/Lying_Leg_Curls/0.jpg")
-                .gifUrl("https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/exercises/Lying_Leg_Curls/animation.gif")
+                .categoria("Pliometría")
+                .equipamiento("Peso Corporal")
+                .nivel("Intermedio")
+                .instrucciones("1. Flexiona las rodillas cargando energía elástica en los cuádriceps y glúteos.\n2. Salta explosivamente hacia atrás o arriba extendiendo caderas y tobillos.\n3. Aterriza en flexión para amortiguar el impacto.")
+                .imagenUrl(baseCdn + "quads/backward-jump.gif")
+                .gifUrl(baseCdn + "quads/backward-jump.gif")
                 .build());
 
         // 4. HOMBROS
         dataset.add(Ejercicio.builder()
-                .nombre("Press Militar con Barra de Pie")
+                .nombre("Press Militar de Hombros")
                 .grupoMuscular("Hombros")
                 .categoria("Fuerza")
-                .equipamiento("Barra")
-                .nivel("Intermedio")
-                .instrucciones("1. Coloca la barra a la altura de las clavículas con pies firmes.\n2. Empuja la barra verticalmente por encima de la cabeza apretando el abdomen.\n3. Pasa la cabeza ligeramente hacia adelante al bloquear arriba.\n4. Desciende con control.")
-                .imagenUrl("https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/exercises/Standing_Military_Press/0.jpg")
-                .gifUrl("https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/exercises/Standing_Military_Press/animation.gif")
+                .equipamiento("Banda Elástica / Mancuernas")
+                .nivel("Principiante")
+                .instrucciones("1. Sujeta los extremos de la banda o mancuernas a la altura de los hombros.\n2. Empuja hacia arriba por encima de la cabeza hasta extender los brazos.\n3. Baja lentamente controlando la resistencia.")
+                .imagenUrl(baseCdn + "delts/band-shoulder-press.gif")
+                .gifUrl(baseCdn + "delts/band-shoulder-press.gif")
                 .build());
 
         dataset.add(Ejercicio.builder()
-                .nombre("Elevaciones Laterales con Mancuernas")
+                .nombre("Elevaciones Laterales para Deltoides")
                 .grupoMuscular("Hombros")
                 .categoria("Aislamiento")
-                .equipamiento("Mancuernas")
+                .equipamiento("Banda / Mancuernas")
                 .nivel("Principiante")
-                .instrucciones("1. De pie con mancuernas a los costados y codos ligeramente flexionados.\n2. Eleva los brazos hacia los lados hasta la altura de los hombros.\n3. Vierte las muñecas ligeramente como sirviendo una jarra de agua.\n4. Baja de forma controlada.")
-                .imagenUrl("https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/exercises/Side_Lateral_Raise/0.jpg")
-                .gifUrl("https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/exercises/Side_Lateral_Raise/animation.gif")
+                .instrucciones("1. De pie con los brazos a los lados y codos ligeramente flexionados.\n2. Eleva los brazos lateralmente hasta alcanzar la altura de los hombros.\n3. Mantén 1 segundo en la cima y desciende suavemente.")
+                .imagenUrl(baseCdn + "delts/band-front-lateral-raise.gif")
+                .gifUrl(baseCdn + "delts/band-front-lateral-raise.gif")
+                .build());
+
+        dataset.add(Ejercicio.builder()
+                .nombre("Pájaros / Vuelos para Deltoides Posterior")
+                .grupoMuscular("Hombros")
+                .categoria("Aislamiento")
+                .equipamiento("Banda / Mancuernas")
+                .nivel("Intermedio")
+                .instrucciones("1. Inclina el torso al frente manteniendo la espalda recta.\n2. Abre los brazos hacia los costados apretando la parte posterior del hombro.\n3. Regresa despacio sin perder la postura.")
+                .imagenUrl(baseCdn + "delts/band-reverse-fly.gif")
+                .gifUrl(baseCdn + "delts/band-reverse-fly.gif")
                 .build());
 
         // 5. BRAZOS (BÍCEPS Y TRÍCEPS)
         dataset.add(Ejercicio.builder()
-                .nombre("Curl de Bíceps con Barra Z")
+                .nombre("Curl de Bíceps Alterno con Barra")
                 .grupoMuscular("Brazos")
                 .categoria("Hipertrofia")
-                .equipamiento("Barra Z")
+                .equipamiento("Barra / Mancuernas")
                 .nivel("Principiante")
-                .instrucciones("1. Sujeta la barra Z por las curvas ergonómicas con agarre supino.\n2. Mantén los codos pegados al cuerpo y flexiona los antebrazos.\n3. Contrae al máximo los bíceps arriba y baja despacio sin balancear la espalda.")
-                .imagenUrl("https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/exercises/EZ_Bar_Curl/0.jpg")
-                .gifUrl("https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/exercises/EZ_Bar_Curl/animation.gif")
+                .instrucciones("1. De pie con la barra en agarre supino pegada al cuerpo.\n2. Flexiona el codo levantando la carga hacia el pecho contrayendo el bíceps.\n3. Desciende lentamente estirando el brazo por completo.")
+                .imagenUrl(baseCdn + "biceps/barbell-alternate-biceps-curl.gif")
+                .gifUrl(baseCdn + "biceps/barbell-alternate-biceps-curl.gif")
                 .build());
 
         dataset.add(Ejercicio.builder()
-                .nombre("Extensiones de Tríceps en Polea con Cuerda")
+                .nombre("Curl Concentrado de Bíceps")
                 .grupoMuscular("Brazos")
                 .categoria("Aislamiento")
-                .equipamiento("Polea Alta y Cuerda")
+                .equipamiento("Mancuerna / Banda")
                 .nivel("Principiante")
-                .instrucciones("1. Sujeta los extremos de la cuerda con los codos pegados a los costados.\n2. Empuja hacia abajo y abre los extremos de la cuerda al final del recorrido.\n3. Siente la contracción en la cabeza lateral del tríceps y regresa a 90°.")
-                .imagenUrl("https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/exercises/Triceps_Pushdown_Rope_Attachment/0.jpg")
-                .gifUrl("https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/exercises/Triceps_Pushdown_Rope_Attachment/animation.gif")
+                .instrucciones("1. Siéntate y apoya el codo en la cara interna del muslo.\n2. Flexiona el brazo aislando completamente el bíceps sin mover el torso.\n3. Baja controlando la fase negativa.")
+                .imagenUrl(baseCdn + "biceps/band-concentration-curl.gif")
+                .gifUrl(baseCdn + "biceps/band-concentration-curl.gif")
                 .build());
 
-        // 6. CORE / ABDOMINALES
+        // 6. CORE / ABDOMEN
         dataset.add(Ejercicio.builder()
-                .nombre("Plancha Abdominal Isométrica")
+                .nombre("Bicicleta Abdominal (Air Bike Crunch)")
                 .grupoMuscular("Core")
-                .categoria("Resistencia")
-                .equipamiento("Colchoneta / Peso Corporal")
+                .categoria("Definición y Resistencia")
+                .equipamiento("Colchoneta")
                 .nivel("Principiante")
-                .instrucciones("1. Apoya los antebrazos y las puntas de los pies en el suelo.\n2. Mantén el cuerpo en línea recta desde los hombros hasta los tobillos.\n3. Activa fuertemente el core y glúteos evitando que la cadera caiga.")
-                .imagenUrl("https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/exercises/Plank/0.jpg")
-                .gifUrl("https://raw.githubusercontent.com/hasaneyldrm/exercises-dataset/main/exercises/Plank/animation.gif")
+                .instrucciones("1. Tiéndete boca arriba con las manos detrás de la nuca y rodillas elevadas a 90°.\n2. Lleva el codo derecho hacia la rodilla izquierda extendiendo la pierna contraria.\n3. Alterna de lado de forma continua y fluida contrayendo los oblicuos.")
+                .imagenUrl(baseCdn + "abs/air-bike.gif")
+                .gifUrl(baseCdn + "abs/air-bike.gif")
                 .build());
 
-        for (Ejercicio e : dataset) {
-            if (!ejercicioRepository.existsByNombre(e.getNombre())) {
-                ejercicioRepository.save(e);
-            }
-        }
+        dataset.add(Ejercicio.builder()
+                .nombre("Abdominales Sit-Up Clásicos")
+                .grupoMuscular("Core")
+                .categoria("Fuerza")
+                .equipamiento("Colchoneta")
+                .nivel("Principiante")
+                .instrucciones("1. Tiéndete boca arriba con las rodillas flexionadas y plantas de los pies firmes.\n2. Eleva el torso usando la fuerza de los abdominales hasta quedar sentado.\n3. Desciende vértebra por vértebra sin dejar caer la espalda.")
+                .imagenUrl(baseCdn + "abs/3-4-sit-up.gif")
+                .gifUrl(baseCdn + "abs/3-4-sit-up.gif")
+                .build());
+
+        dataset.add(Ejercicio.builder()
+                .nombre("Toques Alternos de Talón para Oblicuos")
+                .grupoMuscular("Core")
+                .categoria("Aislamiento")
+                .equipamiento("Colchoneta")
+                .nivel("Principiante")
+                .instrucciones("1. Boca arriba con rodillas dobladas y escápulas ligeramente despegadas del suelo.\n2. Inclina el torso lateralmente para tocar el talón derecho con la mano derecha.\n3. Alterna de inmediato al lado izquierdo apretando los oblicuos.")
+                .imagenUrl(baseCdn + "abs/alternate-heel-touchers.gif")
+                .gifUrl(baseCdn + "abs/alternate-heel-touchers.gif")
+                .build());
+
+        ejercicioRepository.saveAll(dataset);
     }
 }

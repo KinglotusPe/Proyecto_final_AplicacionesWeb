@@ -14,7 +14,7 @@
                     <i class="bi bi-collection-play-fill text-danger me-2"></i> Biblioteca Visual de Ejercicios
                 </h1>
                 <p class="text-muted mb-0 small">
-                    Guía de técnica en video/GIF animado con desglose de grupos musculares y ejecución paso a paso (Dataset Pro).
+                    Guía de técnica interactiva con animaciones en vivo de cada ejercicio, ejecución paso a paso y músculos involucrados.
                 </p>
             </div>
             <div class="d-flex gap-2">
@@ -73,14 +73,15 @@
     <!-- Grid de Tarjetas de Ejercicios -->
     <div class="row g-4">
         <div class="col-lg-4 col-md-6" th:each="e : ${ejercicios}">
-            <div class="card h-100 shadow-sm border-0 exercise-card" style="border-radius: 14px; overflow: hidden; transition: transform 0.2s, box-shadow 0.2s;">
-                <!-- Imagen / GIF Preview -->
-                <div class="position-relative bg-dark text-center p-2 d-flex align-items-center justify-content-center" style="height: 220px; background-color: #0f172a !important;">
+            <div class="card h-100 shadow-sm border-0" style="border-radius: 14px; overflow: hidden; background: #ffffff;">
+                <!-- Animación GIF en Vivo -->
+                <div class="position-relative text-center p-2 d-flex align-items-center justify-content-center" style="height: 230px; background-color: #0f172a !important;">
                     <img th:src="${e.gifUrl != null ? e.gifUrl : e.imagenUrl}" 
                          th:alt="${e.nombre}"
                          class="img-fluid rounded" 
-                         style="max-height: 200px; object-fit: contain;"
-                         loading="lazy">
+                         style="max-height: 215px; width: auto; object-fit: contain;"
+                         loading="lazy"
+                         referrerpolicy="no-referrer">
                     <span class="position-absolute top-0 start-0 m-2 badge bg-danger shadow-sm" th:text="${e.grupoMuscular}">Pecho</span>
                     <span class="position-absolute top-0 end-0 m-2 badge bg-dark border border-secondary shadow-sm" th:text="${e.nivel}">Intermedio</span>
                 </div>
@@ -90,9 +91,8 @@
                     <div>
                         <h2 class="h5 fw-bold text-dark mb-1" th:text="${e.nombre}">Press de Banca</h2>
                         <div class="small text-muted mb-2">
-                            <i class="bi bi-tools text-danger me-1"></i> <span th:text="${e.equipamiento}">Barra</span>
-                            <span class="mx-1">•</span>
-                            <i class="bi bi-tag text-primary me-1"></i> <span th:text="${e.categoria}">Fuerza</span>
+                            <span class="badge bg-light text-dark border me-1"><i class="bi bi-tools text-danger me-1"></i> <span th:text="${e.equipamiento}">Máquina Smith</span></span>
+                            <span class="badge bg-light text-dark border"><i class="bi bi-tag text-primary me-1"></i> <span th:text="${e.categoria}">Fuerza</span></span>
                         </div>
                         <p class="text-secondary small mb-3 text-truncate-2" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;" th:text="${e.instrucciones}">
                             Instrucciones de técnica...
@@ -133,7 +133,7 @@
 <div class="modal fade" id="modalEjercicio" tabindex="-1" aria-labelledby="modalEjercicioLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content border-0 shadow" style="border-radius: 16px; overflow: hidden;">
-            <div class="modal-header bg-dark text-white border-bottom border-danger border-2">
+            <div class="modal-header bg-dark text-white border-bottom border-danger border-2" style="background-color: #111827 !important;">
                 <h5 class="modal-title fw-bold" id="modalEjercicioLabel">
                     <i class="bi bi-fire text-danger me-2"></i> <span id="modalTitulo">Nombre Ejercicio</span>
                 </h5>
@@ -141,8 +141,8 @@
             </div>
             <div class="modal-body p-4">
                 <div class="row g-3 align-items-center">
-                    <div class="col-md-6 text-center bg-dark rounded-3 p-3" style="background-color: #0f172a !important;">
-                        <img id="modalGif" src="" alt="Animación" class="img-fluid rounded" style="max-height: 280px; object-fit: contain;">
+                    <div class="col-md-6 text-center rounded-3 p-3" style="background-color: #0f172a !important;">
+                        <img id="modalGif" src="" alt="Animación" class="img-fluid rounded" style="max-height: 280px; object-fit: contain;" referrerpolicy="no-referrer">
                     </div>
                     <div class="col-md-6">
                         <div class="d-flex gap-2 mb-3">
