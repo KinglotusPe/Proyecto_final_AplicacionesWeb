@@ -67,49 +67,41 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Override
     public void inicializarUsuariosPorDefecto() {
         // 1. Admin General
-        if (!usuarioRepository.existsByUsername("admin")) {
-            Usuario admin = new Usuario();
-            admin.setUsername("admin");
-            admin.setPassword(passwordEncoder.encode("admin123"));
-            admin.setNombre("César Luza (Administrador General)");
-            admin.setRol(Rol.ROLE_ADMIN);
-            admin.setActivo(true);
-            usuarioRepository.save(admin);
-        }
+        Usuario admin = usuarioRepository.findByUsername("admin").orElse(new Usuario());
+        admin.setUsername("admin");
+        admin.setPassword(passwordEncoder.encode("admin123"));
+        admin.setNombre("César Luza (Administrador General)");
+        admin.setRol(Rol.ROLE_ADMIN);
+        admin.setActivo(true);
+        usuarioRepository.save(admin);
 
         // 2. Recepcionista / Trabajador
-        if (!usuarioRepository.existsByUsername("recepcion")) {
-            Usuario recepcion = new Usuario();
-            recepcion.setUsername("recepcion");
-            recepcion.setPassword(passwordEncoder.encode("recepcion123"));
-            recepcion.setNombre("Staff Recepción BRUTAL");
-            recepcion.setRol(Rol.ROLE_RECEPCIONISTA);
-            recepcion.setActivo(true);
-            usuarioRepository.save(recepcion);
-        }
+        Usuario recepcion = usuarioRepository.findByUsername("recepcion").orElse(new Usuario());
+        recepcion.setUsername("recepcion");
+        recepcion.setPassword(passwordEncoder.encode("recepcion123"));
+        recepcion.setNombre("Staff Recepción BRUTAL");
+        recepcion.setRol(Rol.ROLE_RECEPCIONISTA);
+        recepcion.setActivo(true);
+        usuarioRepository.save(recepcion);
 
         // 3. Entrenador Staff
-        if (!usuarioRepository.existsByUsername("entrenador")) {
-            Usuario entrenador = new Usuario();
-            entrenador.setUsername("entrenador");
-            entrenador.setPassword(passwordEncoder.encode("entrenador123"));
-            entrenador.setNombre("Prof. Marco Antonio Vargas");
-            entrenador.setRol(Rol.ROLE_ENTRENADOR);
-            entrenador.setActivo(true);
-            entrenadorRepository.findAll().stream().findFirst().ifPresent(entrenador::setEntrenador);
-            usuarioRepository.save(entrenador);
-        }
+        Usuario entrenador = usuarioRepository.findByUsername("entrenador").orElse(new Usuario());
+        entrenador.setUsername("entrenador");
+        entrenador.setPassword(passwordEncoder.encode("entrenador123"));
+        entrenador.setNombre("Prof. Marco Antonio Vargas");
+        entrenador.setRol(Rol.ROLE_ENTRENADOR);
+        entrenador.setActivo(true);
+        entrenadorRepository.findAll().stream().findFirst().ifPresent(entrenador::setEntrenador);
+        usuarioRepository.save(entrenador);
 
         // 4. Cliente / Socio (ejemplo DNI: 72345678)
-        if (!usuarioRepository.existsByUsername("72345678")) {
-            Usuario clienteUser = new Usuario();
-            clienteUser.setUsername("72345678");
-            clienteUser.setPassword(passwordEncoder.encode("cliente123"));
-            clienteUser.setNombre("Juan Carlos Perez Lopez");
-            clienteUser.setRol(Rol.ROLE_CLIENTE);
-            clienteUser.setActivo(true);
-            clienteRepository.findByDni("72345678").ifPresent(clienteUser::setCliente);
-            usuarioRepository.save(clienteUser);
-        }
+        Usuario clienteUser = usuarioRepository.findByUsername("72345678").orElse(new Usuario());
+        clienteUser.setUsername("72345678");
+        clienteUser.setPassword(passwordEncoder.encode("cliente123"));
+        clienteUser.setNombre("Juan Carlos Perez Lopez");
+        clienteUser.setRol(Rol.ROLE_CLIENTE);
+        clienteUser.setActivo(true);
+        clienteRepository.findByDni("72345678").ifPresent(clienteUser::setCliente);
+        usuarioRepository.save(clienteUser);
     }
 }
