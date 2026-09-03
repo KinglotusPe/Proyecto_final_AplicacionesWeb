@@ -82,4 +82,56 @@ public class TiendaController {
         model.addAttribute("totalVentasHoy", tiendaService.calcularTotalVentasHoy());
         return "tienda/ventas_list";
     }
+
+    // --- GESTIÓN DE INVENTARIO Y PRODUCTOS ---
+
+    @GetMapping("/productos")
+    public String listarInventario(Model model) {
+        model.addAttribute("productos", tiendaService.listarProductos());
+        model.addAttribute("categorias", tiendaService.listarCategorias());
+        return "tienda/productos_list";
+    }
+
+    @GetMapping("/productos/nuevo")
+    public String nuevoProductoForm(Model model) {
+        model.addAttribute("producto", new Producto());
+        model.addAttribute("categorias", tiendaService.listarCategorias());
+        return "tienda/producto_form";
+    }
+
+    @GetMapping("/productos/editar/{id}")
+    public String editarProductoForm(@PathVariable("id") Long id, Model model, RedirectAttributes flash) {
+        return tiendaService.buscarProductoPorId(id)
+                .map(p -> {
+                    model.addAttribute("producto", p);
+                    model.addAttribute("categorias", tiendaService.listarCategorias());
+                    return "tienda/producto_form";
+                })
+                .orElseGet(() -> {
+                    flash.addFlashAttribute("error", "El producto no existe.");
+                    return "redirect:/tienda/productos";
+                });
+    }
+
+    @PostMapping("/productos/guardar")
+    public String guardarProducto(@ModelAttribute Producto producto, RedirectAttributes flash) {
+        try {
+            tiendaService.guardarProducto(producto);
+            flash.addFlashAttribute("success", "Producto guardado correctamente en el inventario.");
+        } catch (Exception e) {
+            flash.addFlashAttribute("error", "Error al guardar el producto: " + e.getMessage());
+        }
+        return "redirect:/tienda/productos";
+    }
+
+    @PostMapping("/productos/eliminar/{id}")
+    public String eliminarProducto(@PathVariable("id") Long id, RedirectAttributes flash) {
+        try {
+            tiendaService.eliminarProducto(id);
+            flash.addFlashAttribute("success", "Producto eliminado del catálogo.");
+        } catch (Exception e) {
+            flash.addFlashAttribute("error", "No se puede eliminar el producto porque tiene ventas asociadas.");
+        }
+        return "redirect:/tienda/productos";
+    }
 }

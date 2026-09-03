@@ -31,6 +31,9 @@
                     <div class="text-muted" style="font-size: 0.75rem;">VENTAS DE HOY:</div>
                     <strong class="text-success fs-6" th:text="${'S/ ' + (totalVentasHoy != null ? totalVentasHoy : '0.00')}">S/ 0.00</strong>
                 </div>
+                <a th:href="@{/tienda/productos}" class="btn btn-outline-danger btn-sm fw-bold">
+                    <i class="bi bi-boxes me-1"></i> Inventario & Stock
+                </a>
                 <a th:href="@{/tienda/ventas}" class="btn btn-outline-dark btn-sm fw-bold">
                     <i class="bi bi-receipt me-1"></i> Historial de Ventas
                 </a>
