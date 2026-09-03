@@ -45,7 +45,8 @@ CREATE TABLE cliente (
     edad INT NULL,
     telefono VARCHAR(20) NULL,
     correo VARCHAR(100) NULL,
-    fecha_inscripcion DATE NULL
+    fecha_inscripcion DATE NULL,
+    foto_url VARCHAR(500) NULL
 ) ENGINE=InnoDB;
 
 CREATE TABLE entrenador (

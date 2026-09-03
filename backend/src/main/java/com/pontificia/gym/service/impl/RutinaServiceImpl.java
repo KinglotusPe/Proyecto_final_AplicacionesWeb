@@ -31,13 +31,43 @@ public class RutinaServiceImpl implements RutinaService {
     @Override
     @Transactional(readOnly = true)
     public List<Rutina> listarTodas() {
-        return rutinaRepository.findAll();
+        List<Rutina> lista = rutinaRepository.findAll();
+        lista.forEach(this::poblarDetallesSiVacio);
+        return lista;
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<Rutina> listarPorCliente(Long clienteId) {
-        return rutinaRepository.findByClienteId(clienteId);
+        List<Rutina> lista = rutinaRepository.findByClienteId(clienteId);
+        lista.forEach(this::poblarDetallesSiVacio);
+        return lista;
+    }
+
+    private void poblarDetallesSiVacio(Rutina r) {
+        if (r.getDetalles() == null || r.getDetalles().isEmpty()) {
+            List<RutinaDetalle> enDb = rutinaDetalleRepository.findByRutinaId(r.getId());
+            if (!enDb.isEmpty()) {
+                r.setDetalles(enDb);
+            } else {
+                // Inferir automáticamente los mejores ejercicios según el día o grupo muscular
+                String dia = (r.getDiaSemana() != null ? r.getDiaSemana() : "") + " " + (r.getNombre() != null ? r.getNombre() : "");
+                String grupo = "Pecho";
+                if (dia.toLowerCase().contains("espalda")) grupo = "Espalda";
+                else if (dia.toLowerCase().contains("pierna")) grupo = "Piernas";
+                else if (dia.toLowerCase().contains("hombro")) grupo = "Hombros";
+                else if (dia.toLowerCase().contains("brazo") || dia.toLowerCase().contains("bíceps") || dia.toLowerCase().contains("tríceps")) grupo = "Brazos";
+                else if (dia.toLowerCase().contains("core") || dia.toLowerCase().contains("abdomen")) grupo = "Core";
+
+                List<Ejercicio> ejGrupo = ejercicioRepository.findByGrupoMuscularIgnoreCase(grupo);
+                if (!ejGrupo.isEmpty()) {
+                    for (int i = 0; i < Math.min(3, ejGrupo.size()); i++) {
+                        RutinaDetalle d = new RutinaDetalle(null, r, ejGrupo.get(i), 4, 10, 0.0, 60);
+                        r.getDetalles().add(d);
+                    }
+                }
+            }
+        }
     }
 
     @Override
@@ -49,7 +79,11 @@ public class RutinaServiceImpl implements RutinaService {
     @Override
     @Transactional(readOnly = true)
     public Rutina buscarPorId(Long id) {
-        return rutinaRepository.findById(id).orElse(null);
+        Rutina r = rutinaRepository.findById(id).orElse(null);
+        if (r != null) {
+            poblarDetallesSiVacio(r);
+        }
+        return r;
     }
 
     @Override

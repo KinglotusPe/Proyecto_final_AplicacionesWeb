@@ -39,6 +39,9 @@ public class Cliente {
     @Column(name = "fecha_inscripcion")
     private LocalDate fechaInscripcion;
 
+    @Column(name = "foto_url", length = 500)
+    private String fotoUrl;
+
     public Cliente() {
     }
 
@@ -106,6 +109,21 @@ public class Cliente {
 
     public void setFechaInscripcion(LocalDate fechaInscripcion) {
         this.fechaInscripcion = fechaInscripcion;
+    }
+
+    public String getFotoUrl() {
+        return fotoUrl;
+    }
+
+    public void setFotoUrl(String fotoUrl) {
+        this.fotoUrl = fotoUrl;
+    }
+
+    public String getFotoUrlOrDefault() {
+        if (fotoUrl != null && !fotoUrl.trim().isEmpty()) {
+            return fotoUrl;
+        }
+        return "https://ui-avatars.com/api/?name=" + (nombres != null ? nombres.replace(" ", "+") : "Socio") + "+" + (apellidos != null ? apellidos.replace(" ", "+") : "") + "&background=dc3545&color=fff&size=200&bold=true";
     }
 
     public String getNombreCompleto() {

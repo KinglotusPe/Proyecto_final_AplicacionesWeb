@@ -1,150 +1,360 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/layout :: head(titulo='Módulo de Control de Acceso Rápido')}"></head>
+<head th:replace="~{fragments/layout :: head(titulo='Control de Acceso y Molinete')}"></head>
 <body class="bg-light d-flex flex-column min-vh-100">
 <nav th:replace="~{fragments/layout :: navbar}"></nav>
 
 <div class="container mb-5">
+
+    <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
         <div>
-            <h1 class="h3 fw-bold text-dark mb-0">⚡ Control de Acceso Rápido (Recepción / Molinete)</h1>
-            <p class="text-secondary small mb-0">Escaneo de DNI o código de barras con validación inmediata de membresía</p>
+            <h1 class="h3 fw-bold text-dark mb-1">
+                <i class="bi bi-shield-lock-fill text-danger me-2"></i> Control de Acceso y Molinete de Seguridad
+            </h1>
+            <p class="text-secondary small mb-0">Escaneo de Carnet QR con cámara en vivo, verificación facial fotográfica y control de doble ingreso.</p>
         </div>
-        <a th:href="@{/asistencias}" class="btn btn-outline-secondary btn-sm">
-            <i class="bi bi-arrow-left me-1"></i> Volver a Asistencias
+        <a th:href="@{/asistencias}" class="btn btn-outline-secondary btn-sm fw-semibold">
+            <i class="bi bi-arrow-left me-1"></i> Volver a Historial
         </a>
     </div>
 
-    <!-- Caja de Escaneo Principal -->
-    <div class="card shadow-sm border-0 mb-4 p-4 text-center" style="border-radius: 16px; background-color: #111827; color: white;">
-        <h2 class="h4 fw-bold text-light mb-3">
-            <i class="bi bi-upc-scan text-danger me-2"></i> Ingrese o Escanee el DNI del Socio
-        </h2>
-        
-        <form th:action="@{/asistencias/control-acceso/verificar}" method="post" class="mx-auto" style="max-width: 500px;">
-            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-            <div class="input-group input-group-lg shadow">
-                <span class="input-group-text bg-dark border-secondary text-danger">
-                    <i class="bi bi-person-vcard fs-3"></i>
-                </span>
-                <input type="text" name="dni" class="form-control text-center fw-bold fs-3 border-secondary" 
-                       placeholder="Ej: 72345678" autofocus required pattern="[0-9]{8,15}" autocomplete="off">
-                <button type="submit" class="btn btn-danger fw-bold px-4 text-uppercase">
-                    Validar <i class="bi bi-arrow-right-circle ms-1"></i>
-                </button>
-            </div>
-            <div class="text-secondary small mt-2">
-                <i class="bi bi-keyboard me-1"></i> Compatible con pistolas lectoras de código de barras USB y teclado.
-            </div>
-        </form>
-    </div>
+    <div class="row g-4 justify-content-center">
+        <!-- Columna Izquierda: Escáner y Formulario -->
+        <div class="col-lg-7">
+            <!-- Selector de Modo de Escaneo -->
+            <div class="card shadow-sm border-0 mb-4" style="border-radius: 14px; overflow: hidden; background: #111827; color: white;">
+                <div class="card-body p-4 text-center">
+                    
+                    <div class="d-flex justify-content-center gap-2 mb-3">
+                        <button type="button" id="btnModoTeclado" class="btn btn-outline-danger btn-sm active fw-bold" onclick="toggleModo('teclado')">
+                            <i class="bi bi-keyboard me-1"></i> Teclado / Pistola USB
+                        </button>
+                        <button type="button" id="btnModoCamara" class="btn btn-danger btn-sm fw-bold" onclick="toggleModo('camara')">
+                            <i class="bi bi-camera-video-fill me-1"></i> Escáner de Cámara QR
+                        </button>
+                    </div>
 
-    <!-- Resultado Visual del Acceso -->
-    <div class="mb-4" th:if="${resultado != null}">
-        <!-- 1. ACCESO CONCEDIDO (VERDE) -->
-        <div th:if="${resultado == 'PERMITIDO'}" class="card border-0 shadow-lg text-white" style="border-radius: 16px; background: linear-gradient(135deg, #059669 0%, #10b981 100%);">
-            <div class="card-body p-4 text-center">
-                <div class="display-1 mb-2"><i class="bi bi-check-circle-fill"></i></div>
-                <h2 class="display-5 fw-bold text-uppercase mb-1">¡ACCESO CONCEDIDO!</h2>
-                <h3 class="h3 text-white fw-bold mb-3" th:text="${cliente.nombreCompleto}">Juan Carlos Perez</h3>
-                
-                <div class="d-inline-flex gap-3 bg-white text-dark p-3 rounded-4 shadow-sm flex-wrap justify-content-center">
-                    <div>
-                        <div class="small text-muted fw-bold">DNI:</div>
-                        <div class="fw-bold" th:text="${cliente.dni}">72345678</div>
+                    <!-- 1. Modo Cámara Escáner QR en Vivo -->
+                    <div id="seccionCamara" class="d-none">
+                        <div id="qr-reader" class="rounded-3 border border-danger border-2 mx-auto overflow-hidden bg-black" style="max-width: 360px; min-height: 250px;"></div>
+                        <p class="small text-secondary mt-2 mb-0">
+                            <i class="bi bi-qr-code-scan text-danger me-1"></i> Apunta la cámara del dispositivo al código QR del carnet
+                        </p>
                     </div>
-                    <div class="border-start ps-3">
-                        <div class="small text-muted fw-bold">Plan:</div>
-                        <div class="fw-bold text-success" th:text="${membresia.tipo}">MENSUAL</div>
+
+                    <!-- 2. Modo Teclado / Escáner de Código de Barras -->
+                    <div id="seccionTeclado">
+                        <h4 class="h5 fw-bold mb-3 text-light">
+                            <i class="bi bi-upc-scan text-danger me-2"></i> Ingrese o Escanee el DNI del Socio
+                        </h4>
+
+                        <form th:action="@{/asistencias/control-acceso/verificar}" method="post" id="formAcceso" class="mx-auto" style="max-width: 480px;">
+                            <div class="input-group input-group-lg shadow">
+                                <span class="input-group-text bg-dark border-secondary text-light">
+                                    <i class="bi bi-person-vcard text-danger"></i>
+                                </span>
+                                <input type="text" name="dni" id="inputDni" class="form-control text-center fw-bold fs-4 bg-white text-dark" 
+                                       placeholder="Ej: 72345678" autofocus required autocomplete="off" />
+                                <button type="submit" class="btn btn-danger fw-bold px-4">
+                                    VALIDAR <i class="bi bi-arrow-right-circle ms-1"></i>
+                                </button>
+                            </div>
+                        </form>
+                        <div class="small text-secondary mt-2">Compatible con lectores láser USB y carnet digital QR.</div>
                     </div>
-                    <div class="border-start ps-3">
-                        <div class="small text-muted fw-bold">Vence:</div>
-                        <div class="fw-bold" th:text="${#temporals.format(membresia.fechaVencimiento, 'dd/MM/yyyy')}">30/09/2026</div>
+
+                </div>
+            </div>
+
+            <!-- RESULTADO DE VALIDACIÓN (PANEL DE SEGURIDAD CON FOTO) -->
+            <div th:if="${resultado != null}">
+
+                <!-- 🟢 CASO 1: ACCESO PERMITIDO (MEMBRESÍA ACTIVA) -->
+                <div th:if="${resultado == 'PERMITIDO'}" class="card shadow-lg border-0 mb-4" 
+                     style="border-radius: 16px; border-left: 8px solid #198754 !important; background: #ffffff;">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 pb-3 mb-3 border-bottom">
+                            <span class="badge bg-success fs-6 px-3 py-2 shadow-sm">
+                                <i class="bi bi-check-circle-fill me-1"></i> ACCESO CONCEDIDO
+                            </span>
+                            <span class="text-success fw-bold small"><i class="bi bi-unlock-fill me-1"></i> MOLINETE DESBLOQUEADO</span>
+                        </div>
+
+                        <div class="row align-items-center g-3">
+                            <div class="col-sm-4 text-center">
+                                <img th:src="${cliente != null ? cliente.fotoUrlOrDefault : 'https://ui-avatars.com/api/?name=Socio&background=198754&color=fff&size=200'}" 
+                                     alt="Foto del Socio" 
+                                     class="rounded-circle img-thumbnail shadow border border-3 border-success" 
+                                     style="width: 120px; height: 120px; object-fit: cover;">
+                                <div class="small text-muted mt-1"><i class="bi bi-camera-fill me-1"></i> Foto Registrada</div>
+                            </div>
+                            <div class="col-sm-8">
+                                <h3 class="h4 fw-bold text-dark mb-1" th:text="${cliente.nombreCompleto}">Juan Carlos Perez</h3>
+                                <div class="text-muted small mb-2">DNI: <strong class="text-dark" th:text="${cliente.dni}">72345678</strong></div>
+                                
+                                <div class="bg-light p-3 rounded-3 small">
+                                    <div>Plan: <strong class="text-success" th:text="${membresia.tipo}">MENSUAL LIBRE</strong></div>
+                                    <div>Válido hasta: <strong th:text="${#temporals.format(membresia.fechaVencimiento, 'dd/MM/yyyy')}">30/09/2026</strong></div>
+                                    <div class="text-primary fw-bold mt-1">
+                                        <i class="bi bi-hourglass-split me-1"></i> <span th:text="${diasRestantes} + ' días de vigencia restantes'">28 días restantes</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="border-start ps-3">
-                        <div class="small text-muted fw-bold">Estado:</div>
-                        <div class="badge bg-success fs-6" th:text="${diasRestantes + ' días restantes'}">28 días restantes</div>
+                </div>
+
+                <!-- ⚠️ CASO 2: ADVERTENCIA DE SEGURIDAD (DOBLE INGRESO / REINGRESO HOY) -->
+                <div th:if="${resultado == 'REINGRESO_ADVERTENCIA'}" class="card shadow-lg border-0 mb-4" 
+                     style="border-radius: 16px; border-left: 8px solid #ffc107 !important; background: #fffbeb;">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 pb-3 mb-3 border-bottom border-warning">
+                            <span class="badge bg-warning text-dark fs-6 px-3 py-2 shadow-sm">
+                                <i class="bi bi-exclamation-triangle-fill text-danger me-1"></i> ADVERTENCIA DE SEGURIDAD
+                            </span>
+                            <span class="text-danger fw-bold small"><i class="bi bi-person-x-fill me-1"></i> VERIFIQUE IDENTIDAD DEL CLIENTE</span>
+                        </div>
+
+                        <div class="alert alert-warning border-0 small py-2 mb-3">
+                            <i class="bi bi-shield-exclamation text-danger fs-5 me-2 align-middle"></i>
+                            <strong>DOBLE INGRESO DETECTADO:</strong> Este cliente ya registró un ingreso el día de hoy a las <strong th:text="${horaPrimerIngreso != null ? horaPrimerIngreso : 'hora previa'}">10:30:00</strong>. Asegúrese de que no esté compartiendo su carnet con otra persona.
+                        </div>
+
+                        <div class="row align-items-center g-3">
+                            <div class="col-sm-4 text-center">
+                                <img th:src="${cliente != null ? cliente.fotoUrlOrDefault : 'https://ui-avatars.com/api/?name=Socio&background=ffc107&color=000&size=200'}" 
+                                     alt="Foto del Socio" 
+                                     class="rounded-circle img-thumbnail shadow border border-3 border-warning" 
+                                     style="width: 120px; height: 120px; object-fit: cover;">
+                                <div class="small text-danger fw-bold mt-1">Comparar con el rostro real</div>
+                            </div>
+                            <div class="col-sm-8">
+                                <h3 class="h4 fw-bold text-dark mb-1" th:text="${cliente.nombreCompleto}">Juan Carlos Perez</h3>
+                                <div class="text-muted small mb-2">DNI: <strong class="text-dark" th:text="${cliente.dni}">72345678</strong></div>
+                                
+                                <div class="bg-white p-3 rounded-3 small border border-warning">
+                                    <div>Plan: <strong class="text-success" th:text="${membresia.tipo}">MENSUAL LIBRE</strong></div>
+                                    <div>Válido hasta: <strong th:text="${#temporals.format(membresia.fechaVencimiento, 'dd/MM/yyyy')}">30/09/2026</strong></div>
+                                    <div class="text-success fw-bold mt-1">
+                                        <i class="bi bi-check-circle me-1"></i> Membresía Vigente (<span th:text="${diasRestantes}">28</span> días restantes)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 🔴 CASO 3: ACCESO DENEGADO (MEMBRESÍA VENCIDA) -->
+                <div th:if="${resultado == 'DENEGADO'}" class="card shadow-lg border-0 mb-4" 
+                     style="border-radius: 16px; border-left: 8px solid #dc3545 !important; background: #ffffff;">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 pb-3 mb-3 border-bottom">
+                            <span class="badge bg-danger fs-6 px-3 py-2 shadow-sm">
+                                <i class="bi bi-x-circle-fill me-1"></i> ACCESO DENEGADO
+                            </span>
+                            <span class="text-danger fw-bold small"><i class="bi bi-lock-fill me-1"></i> MOLINETE BLOQUEADO</span>
+                        </div>
+
+                        <div class="row align-items-center g-3">
+                            <div class="col-sm-4 text-center">
+                                <img th:src="${cliente != null ? cliente.fotoUrlOrDefault : 'https://ui-avatars.com/api/?name=Socio&background=dc3545&color=fff&size=200'}" 
+                                     alt="Foto del Socio" 
+                                     class="rounded-circle img-thumbnail shadow border border-3 border-danger" 
+                                     style="width: 120px; height: 120px; object-fit: cover;">
+                            </div>
+                            <div class="col-sm-8">
+                                <h3 class="h4 fw-bold text-dark mb-1" th:text="${cliente.nombreCompleto}">Juan Carlos Perez</h3>
+                                <div class="text-muted small mb-2">DNI: <strong class="text-dark" th:text="${cliente.dni}">72345678</strong></div>
+                                
+                                <div class="alert alert-danger py-2 mb-2 small">
+                                    <i class="bi bi-exclamation-octagon-fill me-1"></i> <strong>MEMBRESÍA VENCIDA O INACTIVA</strong>
+                                </div>
+                                <div class="small text-muted" th:if="${ultimaMembresia != null}">
+                                    Venció el: <strong class="text-danger" th:text="${#temporals.format(ultimaMembresia.fechaVencimiento, 'dd/MM/yyyy')}">15/08/2026</strong>
+                                </div>
+                                <div class="small text-muted" th:if="${ultimaMembresia == null}">
+                                    El cliente no tiene ningún plan registrado.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ⚠️ CASO 4: DNI NO REGISTRADO -->
+                <div th:if="${resultado == 'NO_REGISTRADO'}" class="alert alert-danger shadow-sm border-0 p-4" style="border-radius: 14px;">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-person-x fs-1 text-danger me-3"></i>
+                        <div>
+                            <h4 class="h5 fw-bold mb-1">DNI No Encontrado</h4>
+                            <p class="mb-0 small">No existe ningún cliente registrado con el documento: <strong th:text="${dniBuscado}">72345678</strong>.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Columna Derecha: Asistencias en Vivo del Día -->
+        <div class="col-lg-5">
+            <div class="card shadow-sm border-0" style="border-radius: 14px;">
+                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center border-bottom">
+                    <h5 class="fw-bold mb-0 text-dark">
+                        <i class="bi bi-clock-history text-danger me-2"></i> Ingresos de Hoy
+                    </h5>
+                    <span class="badge bg-danger fs-6" th:text="${totalHoy} + ' Ingresos'">2 Ingresos</span>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive" style="max-height: 480px; overflow-y: auto;">
+                        <table class="table table-hover align-middle mb-0 small">
+                            <thead class="table-light sticky-top">
+                                <tr>
+                                    <th>Socio</th>
+                                    <th>Hora</th>
+                                    <th class="text-end">Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="a : ${asistenciasHoy}">
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <img th:src="${a.cliente.fotoUrlOrDefault}" 
+                                                 alt="" 
+                                                 class="rounded-circle" 
+                                                 style="width: 32px; height: 32px; object-fit: cover;">
+                                            <div>
+                                                <strong class="d-block text-dark text-truncate" style="max-width: 140px;" th:text="${a.cliente.nombreCompleto}">Juan Perez</strong>
+                                                <span class="text-muted" style="font-size: 0.75rem;" th:text="${a.cliente.dni}">72345678</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="fw-bold text-danger" th:text="${#temporals.format(a.fechaHora, 'HH:mm:ss')}">20:44:18</td>
+                                    <td class="text-end">
+                                        <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1">REGISTRADO</span>
+                                    </td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(asistenciasHoy)}">
+                                    <td colspan="3" class="text-center text-muted py-4">Aún no se han registrado ingresos el día de hoy.</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
         </div>
-
-        <!-- 2. ACCESO DENEGADO (ROJO) -->
-        <div th:if="${resultado == 'DENEGADO'}" class="card border-0 shadow-lg text-white" style="border-radius: 16px; background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);">
-            <div class="card-body p-4 text-center">
-                <div class="display-1 mb-2"><i class="bi bi-x-circle-fill"></i></div>
-                <h2 class="display-5 fw-bold text-uppercase mb-1">¡ACCESO DENEGADO!</h2>
-                <h3 class="h3 text-white fw-bold mb-3" th:text="${cliente.nombreCompleto}">Juan Carlos Perez</h3>
-                
-                <div class="alert alert-light text-danger fw-bold d-inline-block px-4 py-2 mb-3">
-                    <i class="bi bi-exclamation-octagon-fill me-1"></i> MEMBRESÍA VENCIDA O INACTIVA
-                </div>
-                
-                <div class="d-flex justify-content-center gap-2">
-                    <a th:href="@{/membresias/nuevo}" class="btn btn-dark fw-bold px-4 py-2 shadow">
-                        <i class="bi bi-arrow-repeat me-1"></i> Renovar Membresía Ahora
-                    </a>
-                    <a th:href="@{/pagos/nuevo}" class="btn btn-light fw-bold px-4 py-2 shadow text-danger">
-                        <i class="bi bi-cash-coin me-1"></i> Cobrar Cuota
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <!-- 3. NO REGISTRADO (AMARILLO) -->
-        <div th:if="${resultado == 'NO_REGISTRADO'}" class="card border-0 shadow-lg text-dark bg-warning" style="border-radius: 16px;">
-            <div class="card-body p-4 text-center">
-                <div class="display-2 mb-2"><i class="bi bi-person-x-fill"></i></div>
-                <h2 class="h3 fw-bold text-uppercase mb-1">CLIENTE NO ENCONTRADO</h2>
-                <p class="mb-3">El DNI <strong th:text="${dniBuscado}">72345678</strong> no se encuentra registrado en el sistema de <strong>BRUTAL FITNESS</strong>.</p>
-                <a th:href="@{/clientes/nuevo}" class="btn btn-dark fw-bold px-4 py-2 shadow">
-                    <i class="bi bi-person-plus-fill me-1"></i> Registrar Nuevo Cliente
-                </a>
-            </div>
-        </div>
     </div>
 
-    <!-- Tabla de Asistencias del Día -->
-    <div class="card shadow-sm border-0" style="border-radius: 12px;">
-        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-            <h2 class="h5 fw-bold text-dark mb-0">
-                <i class="bi bi-clock-history text-danger me-1"></i> Asistencias Registradas Hoy
-            </h2>
-            <span class="badge bg-danger fs-6 px-3" th:text="${totalHoy + ' Ingresos Hoy'}">5 Ingresos Hoy</span>
-        </div>
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light">
-                    <tr>
-                        <th>#</th>
-                        <th>Cliente / Socio</th>
-                        <th>DNI</th>
-                        <th>Hora de Ingreso</th>
-                        <th>Estado de Entrada</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr th:each="a, iter : ${asistenciasHoy}">
-                        <td class="text-muted fw-semibold" th:text="${iter.count}">1</td>
-                        <td>
-                            <strong class="text-dark" th:text="${a.cliente.nombreCompleto}">Juan Perez</strong>
-                        </td>
-                        <td th:text="${a.cliente.dni}">72345678</td>
-                        <td class="fw-bold text-primary" th:text="${#temporals.format(a.fechaHora, 'HH:mm:ss')}">10:30:15</td>
-                        <td>
-                            <span class="badge bg-success"><i class="bi bi-check2 me-1"></i> REGISTRADO</span>
-                        </td>
-                    </tr>
-                    <tr th:if="${#lists.isEmpty(asistenciasHoy)}">
-                        <td colspan="5" class="text-center text-muted py-4">Aún no hay ingresos registrados el día de hoy.</td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
 </div>
+
+<!-- Librería de Escáner QR por Cámara HTML5 -->
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+
+<!-- Sistema de Audio y Control de Cámara -->
+<script>
+    // Sintetizador Web Audio API para efectos sonoros de molinete
+    function reproducirSonido(tipo) {
+        try {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+
+            if (tipo === 'exito') {
+                // Doble bip agudo de éxito
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(880, ctx.currentTime);
+                osc.frequency.setValueAtTime(1760, ctx.currentTime + 0.1);
+                gain.gain.setValueAtTime(0.2, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.25);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.25);
+            } else if (tipo === 'advertencia') {
+                // Tono de alerta doble
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(600, ctx.currentTime);
+                osc.frequency.setValueAtTime(400, ctx.currentTime + 0.15);
+                gain.gain.setValueAtTime(0.3, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.35);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.35);
+            } else {
+                // Zumbido grave de error
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(180, ctx.currentTime);
+                gain.gain.setValueAtTime(0.3, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.3);
+            }
+        } catch (e) {
+            console.warn("Audio no soportado o bloqueado por el navegador", e);
+        }
+    }
+
+    // Ejecutar sonido según el resultado del servidor
+    document.addEventListener("DOMContentLoaded", function() {
+        /*[# th:if="${resultado == 'PERMITIDO'}"]*/
+        reproducirSonido('exito');
+        /*[/]*/
+        /*[# th:if="${resultado == 'REINGRESO_ADVERTENCIA'}"]*/
+        reproducirSonido('advertencia');
+        /*[/]*/
+        /*[# th:if="${resultado == 'DENEGADO' or resultado == 'NO_REGISTRADO'}"]*/
+        reproducirSonido('error');
+        /*[/]*/
+    });
+
+    let html5QrCode = null;
+
+    function toggleModo(modo) {
+        const secCam = document.getElementById('seccionCamara');
+        const secTec = document.getElementById('seccionTeclado');
+        const btnCam = document.getElementById('btnModoCamara');
+        const btnTec = document.getElementById('btnModoTeclado');
+
+        if (modo === 'camara') {
+            secCam.classList.remove('d-none');
+            secTec.classList.add('d-none');
+            btnCam.classList.add('active');
+            btnTec.classList.remove('active');
+            iniciarEscanerCamara();
+        } else {
+            secCam.classList.add('d-none');
+            secTec.classList.remove('d-none');
+            btnTec.classList.add('active');
+            btnCam.classList.remove('active');
+            detenerEscanerCamara();
+            document.getElementById('inputDni').focus();
+        }
+    }
+
+    function iniciarEscanerCamara() {
+        if (!html5QrCode) {
+            html5QrCode = new Html5Qrcode("qr-reader");
+        }
+        
+        const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+        
+        html5QrCode.start({ facingMode: "environment" }, config, (qrCodeMessage) => {
+            // Código QR detectado exitosamente
+            console.log("QR Detectado:", qrCodeMessage);
+            reproducirSonido('exito');
+            document.getElementById('inputDni').value = qrCodeMessage.trim();
+            document.getElementById('formAcceso').submit();
+        }).catch(err => {
+            console.warn("Error al iniciar cámara:", err);
+        });
+    }
+
+    function detenerEscanerCamara() {
+        if (html5QrCode && html5QrCode.isScanning) {
+            html5QrCode.stop().then(() => {
+                html5QrCode.clear();
+            }).catch(err => console.error("Error al detener cámara:", err));
+        }
+    }
+</script>
 
 <footer th:replace="~{fragments/layout :: footer}"></footer>
 </body>
