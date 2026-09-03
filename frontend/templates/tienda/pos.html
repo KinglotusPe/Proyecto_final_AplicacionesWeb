@@ -4,7 +4,7 @@
 <body class="bg-light d-flex flex-column min-vh-100">
 <nav th:replace="~{fragments/layout :: navbar}"></nav>
 
-<div class="container-fluid px-lg-5 mb-5">
+<div class="container-fluid px-lg-5 mb-5 mt-3">
 
     <!-- Mensajes Flash -->
     <div th:if="${success}" class="alert alert-success alert-dismissible fade show shadow-sm border-0" role="alert">
@@ -70,17 +70,18 @@
             </div>
 
             <!-- Grid de Tarjetas de Productos -->
-            <div class="row g-3">
+            <div class="row g-3" id="gridProductos">
                 <div class="col-md-4 col-sm-6" th:each="p : ${productos}">
                     <div class="card h-100 shadow-sm border-0 product-card" 
                          style="border-radius: 12px; overflow: hidden; cursor: pointer; transition: transform 0.2s;"
-                         th:onclick="'agregarAlCarrito(' + ${p.id} + ', \'' + ${p.nombre} + '\', ' + ${p.precioUnitario} + ', ' + ${p.stock} + ')'"
-                         onmouseover="this.style.transform='translateY(-3px)'"
-                         onmouseout="this.style.transform='translateY(0)'">
+                         th:data-id="${p.id}"
+                         th:data-nombre="${p.nombre}"
+                         th:data-precio="${p.precioUnitario}"
+                         th:data-stock="${p.stock}">
                         
                         <!-- Imagen con Badge de Stock -->
                         <div class="position-relative text-center p-3 bg-light" style="height: 140px;">
-                            <img th:src="${p.imagenUrlOrDefault}" 
+                            <img th:src="${p.imagenUrl != null ? p.imagenUrl : 'https://images.unsplash.com/photo-1579758629938-03607ccdbaba?w=300&auto=format&fit=crop&q=80'}" 
                                  alt="" 
                                  class="img-fluid" 
                                  style="max-height: 120px; object-fit: contain;">
@@ -214,6 +215,19 @@
 
 <script>
     let carrito = [];
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // Event delegation on product cards
+        document.querySelectorAll('.product-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const id = parseInt(card.getAttribute('data-id'));
+                const nombre = card.getAttribute('data-nombre');
+                const precio = parseFloat(card.getAttribute('data-precio'));
+                const stockMax = parseInt(card.getAttribute('data-stock'));
+                agregarAlCarrito(id, nombre, precio, stockMax);
+            });
+        });
+    });
 
     function agregarAlCarrito(id, nombre, precio, stockMax) {
         if (stockMax <= 0) {
