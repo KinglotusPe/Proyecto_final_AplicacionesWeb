@@ -62,6 +62,13 @@
                     </a>
                 </li>
 
+                <!-- Enlace de Caja y Arqueo (Admin y Recepción) -->
+                <li class="nav-item" sec:authorize="hasAnyAuthority('ROLE_ADMIN', 'ROLE_RECEPCIONISTA')">
+                    <a class="nav-link px-2 text-white" th:href="@{/caja}">
+                        <i class="bi bi-wallet2 me-1 text-danger"></i> Caja
+                    </a>
+                </li>
+
                 <!-- Enlace de Entrenadores (Admin y Staff) -->
                 <li class="nav-item" sec:authorize="hasAnyAuthority('ROLE_ADMIN', 'ROLE_RECEPCIONISTA')">
                     <a class="nav-link px-2 text-white" th:href="@{/entrenadores}">
