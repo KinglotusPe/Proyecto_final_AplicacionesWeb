@@ -330,6 +330,13 @@ El sistema integra **Spring Security 6** con protección CSRF, sesiones seguras 
 * Panel exclusivo para el Administrador General.
 * Creación de usuarios, cambio de roles, activación/desactivación de cuentas y encriptación BCrypt.
 
+### 11. 🎬 Biblioteca Visual de Ejercicios y Técnica (`/ejercicios`)
+* Integración del dataset internacional de ejercicios (*hasaneyldrm/exercises-dataset*).
+* Catálogo visual interactivo con **animaciones GIF en vivo** de la técnica correcta.
+* Filtros dinámicos por grupo muscular (*Pecho, Espalda, Piernas, Hombros, Brazos, Core*) y buscador instantáneo.
+* Modales emergentes con instrucciones paso a paso de postura y respiración.
+* Integración directa con las rutinas de los socios en su portal móvil.
+
 ---
 
 ## 🛠️ Stack Tecnológico
