@@ -346,8 +346,12 @@ INSERT INTO rutina (cliente_id, entrenador_id, nombre, dia_semana, ejercicios, n
 
 INSERT INTO rutina_detalle (rutina_id, ejercicio_id, series, repeticiones, peso_sugerido_kg, descanso_segundos) VALUES
 (1, 1, 4, 10, 60.0, 90),
-(1, 2, 3, 12, 22.5, 60),
-(1, 8, 4, 15, 25.0, 45);
+(1, 2, 3, 12, 0.0, 60),
+(1, 3, 3, 15, 0.0, 45),
+(2, 4, 4, 10, 50.0, 90),
+(2, 5, 3, 12, 25.0, 60),
+(2, 12, 3, 12, 20.0, 45),
+(2, 13, 3, 15, 12.5, 45);
 
 -- Tienda / Categorías y Productos
 INSERT INTO categoria_producto (nombre, descripcion) VALUES

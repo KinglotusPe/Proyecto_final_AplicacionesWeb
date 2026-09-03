@@ -9,5 +9,6 @@ public interface RutinaService {
     List<Rutina> listarPorEntrenador(Long entrenadorId);
     Rutina buscarPorId(Long id);
     Rutina guardar(Rutina rutina);
+    Rutina guardarConEjercicios(Rutina rutina, List<Long> ejercicioIds);
     void eliminar(Long id);
 }

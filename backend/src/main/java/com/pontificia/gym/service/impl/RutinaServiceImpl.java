@@ -1,6 +1,10 @@
 package com.pontificia.gym.service.impl;
 
+import com.pontificia.gym.entity.Ejercicio;
 import com.pontificia.gym.entity.Rutina;
+import com.pontificia.gym.entity.RutinaDetalle;
+import com.pontificia.gym.repository.EjercicioRepository;
+import com.pontificia.gym.repository.RutinaDetalleRepository;
 import com.pontificia.gym.repository.RutinaRepository;
 import com.pontificia.gym.service.RutinaService;
 import org.springframework.stereotype.Service;
@@ -13,9 +17,15 @@ import java.util.List;
 public class RutinaServiceImpl implements RutinaService {
 
     private final RutinaRepository rutinaRepository;
+    private final RutinaDetalleRepository rutinaDetalleRepository;
+    private final EjercicioRepository ejercicioRepository;
 
-    public RutinaServiceImpl(RutinaRepository rutinaRepository) {
+    public RutinaServiceImpl(RutinaRepository rutinaRepository,
+                             RutinaDetalleRepository rutinaDetalleRepository,
+                             EjercicioRepository ejercicioRepository) {
         this.rutinaRepository = rutinaRepository;
+        this.rutinaDetalleRepository = rutinaDetalleRepository;
+        this.ejercicioRepository = ejercicioRepository;
     }
 
     @Override
@@ -45,6 +55,24 @@ public class RutinaServiceImpl implements RutinaService {
     @Override
     public Rutina guardar(Rutina rutina) {
         return rutinaRepository.save(rutina);
+    }
+
+    @Override
+    public Rutina guardarConEjercicios(Rutina rutina, List<Long> ejercicioIds) {
+        Rutina saved = rutinaRepository.save(rutina);
+
+        if (ejercicioIds != null && !ejercicioIds.isEmpty()) {
+            // Eliminar detalles previos si era edición
+            rutinaDetalleRepository.deleteByRutinaId(saved.getId());
+
+            for (Long ejId : ejercicioIds) {
+                ejercicioRepository.findById(ejId).ifPresent(ej -> {
+                    RutinaDetalle detalle = new RutinaDetalle(null, saved, ej, 4, 12, 0.0, 60);
+                    rutinaDetalleRepository.save(detalle);
+                });
+            }
+        }
+        return saved;
     }
 
     @Override

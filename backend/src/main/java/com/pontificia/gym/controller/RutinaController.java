@@ -2,6 +2,7 @@ package com.pontificia.gym.controller;
 
 import com.pontificia.gym.entity.Rutina;
 import com.pontificia.gym.service.ClienteService;
+import com.pontificia.gym.service.EjercicioService;
 import com.pontificia.gym.service.EntrenadorService;
 import com.pontificia.gym.service.RutinaService;
 import jakarta.validation.Valid;
@@ -11,6 +12,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.List;
+
 @Controller
 @RequestMapping("/rutinas")
 public class RutinaController {
@@ -18,13 +21,16 @@ public class RutinaController {
     private final RutinaService rutinaService;
     private final ClienteService clienteService;
     private final EntrenadorService entrenadorService;
+    private final EjercicioService ejercicioService;
 
     public RutinaController(RutinaService rutinaService,
                             ClienteService clienteService,
-                            EntrenadorService entrenadorService) {
+                            EntrenadorService entrenadorService,
+                            EjercicioService ejercicioService) {
         this.rutinaService = rutinaService;
         this.clienteService = clienteService;
         this.entrenadorService = entrenadorService;
+        this.ejercicioService = ejercicioService;
     }
 
     @GetMapping
@@ -38,6 +44,7 @@ public class RutinaController {
         model.addAttribute("rutina", new Rutina());
         model.addAttribute("clientes", clienteService.listarTodos());
         model.addAttribute("entrenadores", entrenadorService.listarTodos());
+        model.addAttribute("ejerciciosDisponibles", ejercicioService.listarTodos());
         return "rutinas/form";
     }
 
@@ -50,21 +57,24 @@ public class RutinaController {
         model.addAttribute("rutina", rutina);
         model.addAttribute("clientes", clienteService.listarTodos());
         model.addAttribute("entrenadores", entrenadorService.listarTodos());
+        model.addAttribute("ejerciciosDisponibles", ejercicioService.listarTodos());
         return "rutinas/form";
     }
 
     @PostMapping("/guardar")
     public String guardar(@Valid @ModelAttribute("rutina") Rutina rutina,
                           BindingResult result,
+                          @RequestParam(value = "ejerciciosSeleccionados", required = false) List<Long> ejerciciosSeleccionados,
                           Model model,
                           RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
             model.addAttribute("clientes", clienteService.listarTodos());
             model.addAttribute("entrenadores", entrenadorService.listarTodos());
+            model.addAttribute("ejerciciosDisponibles", ejercicioService.listarTodos());
             return "rutinas/form";
         }
-        rutinaService.guardar(rutina);
-        redirectAttributes.addFlashAttribute("mensaje", "Rutina guardada exitosamente");
+        rutinaService.guardarConEjercicios(rutina, ejerciciosSeleccionados);
+        redirectAttributes.addFlashAttribute("mensaje", "Rutina guardada exitosamente con ejercicios visuales");
         return "redirect:/rutinas";
     }
 

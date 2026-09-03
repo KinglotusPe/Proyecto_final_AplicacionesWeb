@@ -44,6 +44,9 @@ public class Rutina {
     @Column(length = 255)
     private String observaciones;
 
+    @OneToMany(mappedBy = "rutina", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private java.util.List<RutinaDetalle> detalles = new java.util.ArrayList<>();
+
     public Rutina() {
     }
 
@@ -109,5 +112,13 @@ public class Rutina {
 
     public void setObservaciones(String observaciones) {
         this.observaciones = observaciones;
+    }
+
+    public java.util.List<RutinaDetalle> getDetalles() {
+        return detalles;
+    }
+
+    public void setDetalles(java.util.List<RutinaDetalle> detalles) {
+        this.detalles = detalles;
     }
 }
