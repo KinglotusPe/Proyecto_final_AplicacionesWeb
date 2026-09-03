@@ -58,7 +58,7 @@
                             <td>
                                 <span class="badge bg-dark font-monospace px-2 py-1" th:text="${v.codigoComprobante}">TKT-000001</span>
                             </td>
-                            <td class="fw-semibold text-dark" th:text="${#temporals.format(v.fecha, 'dd/MM/yyyy HH:mm:ss')}">02/09/2026 22:15:00</td>
+                            <td class="fw-semibold text-dark" th:text="${#temporals.format(v.fechaHora, 'dd/MM/yyyy HH:mm:ss')}">02/09/2026 22:15:00</td>
                             <td>
                                 <span th:if="${v.cliente != null}" class="fw-bold text-dark" th:text="${v.cliente.nombreCompleto}">Juan Perez</span>
                                 <span th:if="${v.cliente == null}" class="badge bg-secondary">Público General</span>

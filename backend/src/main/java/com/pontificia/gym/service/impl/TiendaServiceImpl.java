@@ -98,7 +98,7 @@ public class TiendaServiceImpl implements TiendaService {
         Venta venta = new Venta();
         venta.setCliente(cliente);
         venta.setUsuario(usuario);
-        venta.setFecha(LocalDateTime.now());
+        venta.setFechaHora(LocalDateTime.now());
         venta.setMetodoPago(metodoPago != null ? metodoPago.toUpperCase() : "EFECTIVO");
 
         Venta savedVenta = ventaRepository.save(venta);
@@ -136,7 +136,7 @@ public class TiendaServiceImpl implements TiendaService {
     @Override
     @Transactional(readOnly = true)
     public List<Venta> listarVentas() {
-        return ventaRepository.findAllByOrderByFechaDesc();
+        return ventaRepository.findAllByOrderByFechaHoraDesc();
     }
 
     @Override

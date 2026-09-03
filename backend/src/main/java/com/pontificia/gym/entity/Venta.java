@@ -22,8 +22,8 @@ public class Venta {
     @JoinColumn(name = "usuario_id")
     private Usuario usuario; // Cajero/recepcionista que realizó la venta
 
-    @Column(nullable = false)
-    private LocalDateTime fecha;
+    @Column(name = "fecha_hora", nullable = false)
+    private LocalDateTime fechaHora;
 
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal total = BigDecimal.ZERO;
@@ -40,11 +40,11 @@ public class Venta {
     public Venta() {
     }
 
-    public Venta(Long id, Cliente cliente, Usuario usuario, LocalDateTime fecha, BigDecimal total, String metodoPago, String comprobanteNumero) {
+    public Venta(Long id, Cliente cliente, Usuario usuario, LocalDateTime fechaHora, BigDecimal total, String metodoPago, String comprobanteNumero) {
         this.id = id;
         this.cliente = cliente;
         this.usuario = usuario;
-        this.fecha = fecha;
+        this.fechaHora = fechaHora;
         this.total = total;
         this.metodoPago = metodoPago;
         this.comprobanteNumero = comprobanteNumero;
@@ -74,12 +74,12 @@ public class Venta {
         this.usuario = usuario;
     }
 
-    public LocalDateTime getFecha() {
-        return fecha;
+    public LocalDateTime getFechaHora() {
+        return fechaHora;
     }
 
-    public void setFecha(LocalDateTime fecha) {
-        this.fecha = fecha;
+    public void setFechaHora(LocalDateTime fechaHora) {
+        this.fechaHora = fechaHora;
     }
 
     public BigDecimal getTotal() {
