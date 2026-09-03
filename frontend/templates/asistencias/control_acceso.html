@@ -99,6 +99,10 @@
                                     <div class="text-primary fw-bold mt-1">
                                         <i class="bi bi-hourglass-split me-1"></i> <span th:text="${diasRestantes} + ' días de vigencia restantes'">28 días restantes</span>
                                     </div>
+                                    <div class="mt-2 pt-2 border-top d-flex align-items-center justify-content-between" th:if="${casilleroAsignado != null}">
+                                        <span class="text-dark fw-bold"><i class="bi bi-key-fill text-warning me-1"></i> Casillero Asignado:</span>
+                                        <span class="badge bg-dark fs-6 px-3 py-1" th:text="${casilleroAsignado}">L-01</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -207,7 +211,11 @@
                                 <div class="bg-light p-3 rounded-3 small">
                                     <div>Especialidad: <strong class="text-primary" th:text="${entrenador.especialidad}">Crossfit / Musculación</strong></div>
                                     <div>Hora de Ingreso: <strong class="text-success fs-6" th:text="${horaMarcaje}">08:00:00 AM</strong></div>
-                                    <div class="text-success fw-bold mt-1">
+                                    <div class="mt-2 pt-2 border-top d-flex align-items-center justify-content-between" th:if="${casilleroAsignado != null}">
+                                        <span class="text-dark fw-bold"><i class="bi bi-key-fill text-primary me-1"></i> Casillero Asignado:</span>
+                                        <span class="badge bg-primary fs-6 px-3 py-1" th:text="${casilleroAsignado}">L-21</span>
+                                    </div>
+                                    <div class="text-success fw-bold mt-2">
                                         <i class="bi bi-check2-all me-1"></i> ¡Bienvenido al turno de entrenamiento!
                                     </div>
                                 </div>
@@ -241,8 +249,12 @@
                                 <div class="bg-light p-3 rounded-3 small">
                                     <div>Hora de Entrada: <strong th:text="${horaEntrada}">08:00:00</strong></div>
                                     <div>Hora de Salida: <strong th:text="${horaSalida}">14:00:00</strong></div>
-                                    <div class="text-purple fw-bold mt-1 fs-6" style="color: #6f42c1 !important;">
+                                    <div class="text-purple fw-bold my-1 fs-6" style="color: #6f42c1 !important;">
                                         <i class="bi bi-hourglass-bottom me-1"></i> Tiempo trabajado: <span th:text="${tiempoTrabajado}">6h 00m</span>
+                                    </div>
+                                    <div class="mt-2 pt-2 border-top d-flex align-items-center justify-content-between" th:if="${casilleroLiberado != null}">
+                                        <span class="text-success fw-bold"><i class="bi bi-unlock-fill me-1"></i> Casillero Liberado:</span>
+                                        <span class="badge bg-success fs-6 px-3 py-1" th:text="${casilleroLiberado}">L-21</span>
                                     </div>
                                 </div>
                             </div>

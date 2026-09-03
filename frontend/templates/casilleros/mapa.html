@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{fragments/layout :: layout(~{::title}, ~{::content})}">
+<head>
+    <title>Control de Casilleros y Aforo en Vivo — Brutal Fitness</title>
+</head>
+<body>
+<div th:fragment="content">
+
+    <!-- Encabezado de la Sección -->
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+        <div>
+            <h1 class="h3 fw-bold text-dark mb-1">
+                <i class="bi bi-grid-3x3-gap-fill text-danger me-2"></i> Mapa de Casilleros y Lockers en Vivo
+            </h1>
+            <p class="text-muted mb-0 small">
+                Monitoreo en tiempo real de ocupación y liberación automática al escanear QR / DNI en el molinete.
+            </p>
+        </div>
+        <div class="d-flex gap-2">
+            <a th:href="@{/asistencias/control-acceso}" class="btn btn-outline-danger btn-sm fw-bold">
+                <i class="bi bi-qr-code-scan me-1"></i> Ir a Control de Acceso
+            </a>
+            <button class="btn btn-primary btn-sm fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#modalAsignarManual">
+                <i class="bi bi-person-plus me-1"></i> Asignación Manual
+            </button>
+        </div>
+    </div>
+
+    <!-- Mensajes Flash de Éxito / Advertencia -->
+    <div th:if="${success != null}" class="alert alert-success alert-dismissible fade show shadow-sm border-0" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i> <span th:text="${success}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${warning != null}" class="alert alert-warning alert-dismissible fade show shadow-sm border-0" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i> <span th:text="${warning}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <!-- Tarjetas de Métricas de Casilleros -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm p-3 text-center" style="border-radius: 14px; background: linear-gradient(135deg, #198754, #20c997); color: white;">
+                <div class="d-flex align-items-center justify-content-center gap-3">
+                    <i class="bi bi-unlock-fill fs-1"></i>
+                    <div class="text-start">
+                        <div class="fs-2 fw-bold" th:text="${totalLibres}">18</div>
+                        <div class="small text-white-50 fw-semibold">CASILLEROS DISPONIBLES</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm p-3 text-center" style="border-radius: 14px; background: linear-gradient(135deg, #dc3545, #fd7e14); color: white;">
+                <div class="d-flex align-items-center justify-content-center gap-3">
+                    <i class="bi bi-lock-fill fs-1"></i>
+                    <div class="text-start">
+                        <div class="fs-2 fw-bold" th:text="${totalOcupados}">6</div>
+                        <div class="small text-white-50 fw-semibold">CASILLEROS OCUPADOS EN USO</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm p-3 text-center bg-white" style="border-radius: 14px; border: 1px solid #e9ecef;">
+                <div class="d-flex align-items-center justify-content-center gap-3">
+                    <i class="bi bi-shield-check fs-1 text-primary"></i>
+                    <div class="text-start">
+                        <div class="fs-2 fw-bold text-dark" th:text="${casilleros.size()}">24</div>
+                        <div class="small text-muted fw-semibold">CAPACIDAD TOTAL DE LOCKERS</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cuadrícula de Lockers Interactiva -->
+    <div class="card shadow-sm border-0 mb-4" style="border-radius: 16px;">
+        <div class="card-header bg-white py-3 border-0 d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <h5 class="h6 fw-bold mb-0 text-dark">
+                <i class="bi bi-door-closed me-2 text-danger"></i> Estado de Todos los Lockers
+            </h5>
+            <div class="d-flex gap-2">
+                <span class="badge bg-success"><i class="bi bi-check-circle me-1"></i> Verde: Disponible</span>
+                <span class="badge bg-danger"><i class="bi bi-lock me-1"></i> Rojo: Ocupado</span>
+                <span class="badge bg-secondary"><i class="bi bi-tools me-1"></i> Gris: Mantenimiento</span>
+            </div>
+        </div>
+        <div class="card-body p-4">
+            <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 g-3">
+                <div class="col" th:each="c : ${casilleros}">
+                    
+                    <!-- Casillero DISPONIBLE -->
+                    <div th:if="${c.estado == 'DISPONIBLE'}" 
+                         class="card h-100 border-2 border-success shadow-sm p-3 text-center bg-light position-relative"
+                         style="border-radius: 14px; transition: transform 0.2s;"
+                         onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
+                        <div class="badge bg-success position-absolute top-0 end-0 m-2">LIBRE</div>
+                        <i class="bi bi-unlock-fill fs-1 text-success my-2"></i>
+                        <h4 class="h5 fw-bold text-dark mb-0" th:text="${c.numero}">L-01</h4>
+                        <div class="small text-muted mt-1" style="font-size: 0.75rem;" th:text="${c.ubicacion}">Vestuario</div>
+                        <form th:action="@{/casilleros/mantenimiento/{id}(id=${c.id})}" method="post" class="mt-3">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                            <button type="submit" class="btn btn-outline-secondary btn-sm py-0 w-100" style="font-size: 0.7rem;">
+                                <i class="bi bi-tools"></i> Reparar
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Casillero OCUPADO -->
+                    <div th:if="${c.estado == 'OCUPADO'}" 
+                         class="card h-100 border-2 border-danger shadow p-3 text-center position-relative"
+                         style="border-radius: 14px; background: #fff5f5; transition: transform 0.2s;"
+                         onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
+                        <div class="badge bg-danger position-absolute top-0 end-0 m-2">EN USO</div>
+                        <i class="bi bi-lock-fill fs-1 text-danger my-1"></i>
+                        <h4 class="h5 fw-bold text-dark mb-1" th:text="${c.numero}">L-02</h4>
+                        <div class="badge bg-dark mb-1" style="font-size: 0.65rem;" th:text="${c.ocupadoPorTipo}">SOCIO</div>
+                        <div class="fw-semibold text-truncate small text-dark" th:text="${c.ocupadoPorNombre}" th:title="${c.ocupadoPorNombre}">Juan Perez</div>
+                        <div class="text-muted" style="font-size: 0.7rem;">DNI: <span th:text="${c.ocupadoPorDni}">72345678</span></div>
+                        <div class="text-primary mt-1" style="font-size: 0.7rem;" th:if="${c.fechaOcupacion != null}">
+                            <i class="bi bi-clock"></i> <span th:text="${#temporals.format(c.fechaOcupacion, 'HH:mm')}">08:30</span>
+                        </div>
+                        
+                        <!-- Botón Liberar Manual -->
+                        <form th:action="@{/casilleros/liberar/{id}(id=${c.id})}" method="post" class="mt-2">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                            <button type="submit" class="btn btn-danger btn-sm py-1 w-100 fw-bold" style="font-size: 0.75rem;">
+                                <i class="bi bi-unlock"></i> Liberar
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Casillero MANTENIMIENTO -->
+                    <div th:if="${c.estado == 'MANTENIMIENTO'}" 
+                         class="card h-100 border-2 border-secondary shadow-sm p-3 text-center bg-secondary-subtle position-relative"
+                         style="border-radius: 14px;">
+                        <div class="badge bg-secondary position-absolute top-0 end-0 m-2">TALLER</div>
+                        <i class="bi bi-tools fs-1 text-secondary my-2"></i>
+                        <h4 class="h5 fw-bold text-dark mb-0" th:text="${c.numero}">L-03</h4>
+                        <div class="small text-muted mt-1" style="font-size: 0.75rem;">En Reparación</div>
+                        <form th:action="@{/casilleros/mantenimiento/{id}(id=${c.id})}" method="post" class="mt-3">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                            <button type="submit" class="btn btn-success btn-sm py-0 w-100" style="font-size: 0.7rem;">
+                                <i class="bi bi-check-lg"></i> Habilitar
+                            </button>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE ASIGNACIÓN MANUAL -->
+    <div class="modal fade" id="modalAsignarManual" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 16px;">
+                <div class="modal-header bg-dark text-white">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-person-plus text-danger me-2"></i> Asignar Casillero Manualmente</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <form th:action="@{/casilleros/asignar-manual}" method="post">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                    <div class="modal-body p-4">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small">Seleccionar Casillero Disponible</label>
+                            <select name="casilleroId" class="form-select" required>
+                                <option value="" disabled selected>-- Seleccione Locker Libre --</option>
+                                <option th:each="c : ${casilleros}" th:if="${c.estado == 'DISPONIBLE'}" th:value="${c.id}" th:text="${c.numero + ' — ' + c.ubicacion}"></option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small">Tipo de Ocupante</label>
+                            <select name="tipo" class="form-select" id="selectTipoOcupante" required>
+                                <option value="SOCIO">Socio / Cliente</option>
+                                <option value="ENTRENADOR">Entrenador / Coach</option>
+                                <option value="RECEPCION">Personal / Recepción</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small">Nombre Completo del Ocupante</label>
+                            <input type="text" name="nombre" class="form-control" placeholder="Ej: Juan Carlos Perez" required />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small">DNI / Documento</label>
+                            <input type="text" name="dni" class="form-control" placeholder="Ej: 72345678" required />
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-danger fw-bold"><i class="bi bi-check-circle me-1"></i> Asignar Locker</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

@@ -54,6 +54,11 @@
                         <i class="bi bi-clock-history me-1 text-danger"></i> Asistencias
                     </a>
                 </li>
+                <li class="nav-item" sec:authorize="hasAnyAuthority('ROLE_ADMIN', 'ROLE_RECEPCIONISTA')">
+                    <a class="nav-link px-2 text-white" th:href="@{/casilleros}">
+                        <i class="bi bi-grid-3x3-gap-fill me-1 text-danger"></i> Casilleros
+                    </a>
+                </li>
 
                 <!-- Enlace de Tienda / POS (Admin y Recepción) -->
                 <li class="nav-item" sec:authorize="hasAnyAuthority('ROLE_ADMIN', 'ROLE_RECEPCIONISTA')">

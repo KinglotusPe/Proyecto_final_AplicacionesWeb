@@ -1,13 +1,7 @@
 package com.pontificia.gym.controller;
 
-import com.pontificia.gym.entity.Asistencia;
-import com.pontificia.gym.entity.Cliente;
-import com.pontificia.gym.entity.Entrenador;
-import com.pontificia.gym.entity.Membresia;
-import com.pontificia.gym.service.AsistenciaService;
-import com.pontificia.gym.service.ClienteService;
-import com.pontificia.gym.service.EntrenadorService;
-import com.pontificia.gym.service.MembresiaService;
+import com.pontificia.gym.entity.*;
+import com.pontificia.gym.service.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -28,6 +22,7 @@ public class ControlAccesoController {
     private final EntrenadorService entrenadorService;
     private final MembresiaService membresiaService;
     private final AsistenciaService asistenciaService;
+    private final CasilleroService casilleroService;
 
     // Registro en memoria de marcajes laborales de entrenadores del día (Entrada / Salida)
     private static final Map<Long, LocalDateTime> marcajeEntradaEntrenadores = new HashMap<>();
@@ -35,17 +30,22 @@ public class ControlAccesoController {
     public ControlAccesoController(ClienteService clienteService,
                                    EntrenadorService entrenadorService,
                                    MembresiaService membresiaService,
-                                   AsistenciaService asistenciaService) {
+                                   AsistenciaService asistenciaService,
+                                   CasilleroService casilleroService) {
         this.clienteService = clienteService;
         this.entrenadorService = entrenadorService;
         this.membresiaService = membresiaService;
         this.asistenciaService = asistenciaService;
+        this.casilleroService = casilleroService;
     }
 
     @GetMapping
     public String vistaControlAcceso(Model model) {
+        casilleroService.inicializarCasillerosPorDefecto();
         model.addAttribute("asistenciasHoy", asistenciaService.listarHoy());
         model.addAttribute("totalHoy", asistenciaService.contarAsistenciasHoy());
+        model.addAttribute("lockersLibres", casilleroService.contarDisponibles());
+        model.addAttribute("lockersOcupados", casilleroService.contarOcupados());
         return "asistencias/control_acceso";
     }
 
@@ -65,23 +65,29 @@ public class ControlAccesoController {
             LocalDateTime ahora = LocalDateTime.now();
 
             if (!marcajeEntradaEntrenadores.containsKey(coach.getId())) {
-                // Primer marcaje: ENTRADA DE TURNO
+                // Primer marcaje: ENTRADA DE TURNO + Asignación de Casillero Staff
                 marcajeEntradaEntrenadores.put(coach.getId(), ahora);
+                Casillero locker = casilleroService.asignarCasilleroLibre(coach.getNombreCompleto(), coach.getDni(), "ENTRENADOR");
+
                 redirectAttributes.addFlashAttribute("resultado", "ENTRENADOR_ENTRADA");
                 redirectAttributes.addFlashAttribute("entrenador", coach);
                 redirectAttributes.addFlashAttribute("horaMarcaje", ahora.format(DateTimeFormatter.ofPattern("HH:mm:ss")));
+                redirectAttributes.addFlashAttribute("casilleroAsignado", locker != null ? locker.getNumero() : "Sin Locker Libre");
             } else {
-                // Segundo marcaje: SALIDA DE TURNO
+                // Segundo marcaje: SALIDA DE TURNO + Liberación Automática de Casillero
                 LocalDateTime entrada = marcajeEntradaEntrenadores.remove(coach.getId());
                 long minutos = ChronoUnit.MINUTES.between(entrada, ahora);
                 long horas = minutos / 60;
                 long minRestantes = minutos % 60;
+
+                Optional<Casillero> liberado = casilleroService.liberarCasilleroPorDni(coach.getDni());
 
                 redirectAttributes.addFlashAttribute("resultado", "ENTRENADOR_SALIDA");
                 redirectAttributes.addFlashAttribute("entrenador", coach);
                 redirectAttributes.addFlashAttribute("horaEntrada", entrada.format(DateTimeFormatter.ofPattern("HH:mm:ss")));
                 redirectAttributes.addFlashAttribute("horaSalida", ahora.format(DateTimeFormatter.ofPattern("HH:mm:ss")));
                 redirectAttributes.addFlashAttribute("tiempoTrabajado", horas + "h " + minRestantes + "m");
+                redirectAttributes.addFlashAttribute("casilleroLiberado", liberado.map(Casillero::getNumero).orElse(null));
             }
             return "redirect:/asistencias/control-acceso";
         }
@@ -111,12 +117,13 @@ public class ControlAccesoController {
         String horaPrimerIngreso = reingresoHoy ? ingresoPrevio.get().getFechaHora().format(DateTimeFormatter.ofPattern("HH:mm:ss")) : null;
 
         if (activa != null && activa.getFechaVencimiento() != null && !activa.getFechaVencimiento().isBefore(LocalDate.now())) {
-            // Membresía ACTIVA y VIGENTE: Registrar asistencia
+            // Membresía ACTIVA: Registrar asistencia y asignar casillero libre
             Asistencia nueva = new Asistencia();
             nueva.setCliente(cliente);
             nueva.setFechaHora(LocalDateTime.now());
             asistenciaService.guardar(nueva);
 
+            Casillero locker = casilleroService.asignarCasilleroLibre(cliente.getNombreCompleto(), cliente.getDni(), "SOCIO");
             long diasRestantes = ChronoUnit.DAYS.between(LocalDate.now(), activa.getFechaVencimiento());
 
             redirectAttributes.addFlashAttribute("resultado", reingresoHoy ? "REINGRESO_ADVERTENCIA" : "PERMITIDO");
@@ -125,6 +132,7 @@ public class ControlAccesoController {
             redirectAttributes.addFlashAttribute("diasRestantes", diasRestantes);
             redirectAttributes.addFlashAttribute("reingresoHoy", reingresoHoy);
             redirectAttributes.addFlashAttribute("horaPrimerIngreso", horaPrimerIngreso);
+            redirectAttributes.addFlashAttribute("casilleroAsignado", locker != null ? locker.getNumero() : "Sin Locker Libre");
         } else {
             // Membresía VENCIDA o SIN MEMBRESÍA
             redirectAttributes.addFlashAttribute("resultado", "DENEGADO");
@@ -164,18 +172,23 @@ public class ControlAccesoController {
 
             if (!marcajeEntradaEntrenadores.containsKey(coach.getId())) {
                 marcajeEntradaEntrenadores.put(coach.getId(), ahora);
+                Casillero locker = casilleroService.asignarCasilleroLibre(coach.getNombreCompleto(), coach.getDni(), "ENTRENADOR");
                 resp.put("status", "ENTRENADOR_ENTRADA");
                 resp.put("horaMarcaje", ahora.format(DateTimeFormatter.ofPattern("HH:mm:ss")));
+                resp.put("casilleroAsignado", locker != null ? locker.getNumero() : "Sin Locker");
             } else {
                 LocalDateTime entrada = marcajeEntradaEntrenadores.remove(coach.getId());
                 long minutos = ChronoUnit.MINUTES.between(entrada, ahora);
                 long horas = minutos / 60;
                 long minRestantes = minutos % 60;
 
+                Optional<Casillero> liberado = casilleroService.liberarCasilleroPorDni(coach.getDni());
+
                 resp.put("status", "ENTRENADOR_SALIDA");
                 resp.put("horaEntrada", entrada.format(DateTimeFormatter.ofPattern("HH:mm:ss")));
                 resp.put("horaSalida", ahora.format(DateTimeFormatter.ofPattern("HH:mm:ss")));
                 resp.put("tiempoTrabajado", horas + "h " + minRestantes + "m");
+                resp.put("casilleroLiberado", liberado.map(Casillero::getNumero).orElse(null));
             }
             return ResponseEntity.ok(resp);
         }
@@ -217,11 +230,14 @@ public class ControlAccesoController {
             nueva.setFechaHora(LocalDateTime.now());
             asistenciaService.guardar(nueva);
 
+            Casillero locker = casilleroService.asignarCasilleroLibre(cliente.getNombreCompleto(), cliente.getDni(), "SOCIO");
             long diasRestantes = ChronoUnit.DAYS.between(LocalDate.now(), activa.getFechaVencimiento());
+
             resp.put("status", reingresoHoy ? "REINGRESO_ADVERTENCIA" : "PERMITIDO");
             resp.put("plan", activa.getTipo());
             resp.put("vencimiento", activa.getFechaVencimiento().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
             resp.put("diasRestantes", diasRestantes);
+            resp.put("casilleroAsignado", locker != null ? locker.getNumero() : "Sin Locker");
         } else {
             resp.put("status", "DENEGADO");
             resp.put("vencimiento", activa != null && activa.getFechaVencimiento() != null ? activa.getFechaVencimiento().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) : "SIN PLAN");
