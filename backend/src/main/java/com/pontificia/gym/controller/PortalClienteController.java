@@ -51,18 +51,21 @@ public class PortalClienteController {
         }
 
         String username = authentication.getName();
+        boolean esAdmin = authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN") || a.getAuthority().equals("ROLE_RECEPCIONISTA"));
 
         // Buscar el cliente por su usuario vinculado o por su DNI
         Cliente cliente = usuarioService.buscarPorUsername(username)
                 .map(u -> u.getCliente() != null ? u.getCliente() : clienteService.buscarPorDni(username).orElse(null))
                 .orElseGet(() -> clienteService.buscarPorDni(username).orElse(null));
 
-        if (cliente == null) {
-            // Si es un admin explorando el portal de socio, tomar el primer cliente de muestra
-            List<Cliente> clientes = clienteService.listarTodos();
-            if (!clientes.isEmpty()) {
-                cliente = clientes.get(0);
-            }
+        if (cliente == null && !esAdmin) {
+            return "redirect:/login";
+        }
+
+        if (cliente == null && esAdmin) {
+            // Si el admin entra sin ser cliente, redirigir al panel de administracion
+            return "redirect:/inicio";
         }
 
         if (cliente != null) {

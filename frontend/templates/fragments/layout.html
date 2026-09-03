@@ -126,7 +126,7 @@
                                 <i class="bi bi-people-gear me-2"></i> Gestión de Usuarios
                             </a>
                         </li>
-                        <li sec:authorize="hasAnyAuthority('ROLE_ADMIN', 'ROLE_CLIENTE')">
+                        <li sec:authorize="hasAuthority('ROLE_CLIENTE')">
                             <a class="dropdown-item small" th:href="@{/portal/mi-cuenta}">
                                 <i class="bi bi-person-badge me-2"></i> Mi Portal de Socio
                             </a>
