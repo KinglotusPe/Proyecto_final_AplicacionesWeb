@@ -1,0 +1,41 @@
+services:
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: gym_db
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./database/gym_db.sql:/docker-entrypoint-initdb.d/01-gym_db.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 40s
+    restart: unless-stopped
+
+  backend:
+    image: maven:3.9-eclipse-temurin-17
+    working_dir: /app
+    volumes:
+      - ./:/app
+      - maven-repo:/root/.m2
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/gym_db?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=America/Lima
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=com.mysql.cj.jdbc.Driver
+      - SERVER_PORT=8080
+      - SPRING_PROFILES_ACTIVE=dev
+    ports:
+      - "3000:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    command: mvn -f /app/backend/pom.xml spring-boot:run
+    restart: unless-stopped
+
+volumes:
+  mysql-data:
+  maven-repo:
