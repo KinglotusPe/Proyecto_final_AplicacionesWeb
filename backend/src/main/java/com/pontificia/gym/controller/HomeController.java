@@ -34,7 +34,7 @@ public class HomeController {
         this.seguimientoFisicoService = seguimientoFisicoService;
     }
 
-    @GetMapping("/")
+    @GetMapping({"/", "/inicio"})
     public String index(Model model) {
         // Métricas de tarjetas
         model.addAttribute("totalClientes", clienteService.contarTotal());
